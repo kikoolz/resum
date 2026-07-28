@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/api/"],
       },
     ],
-    sitemap: "https://airesume.dev/sitemap.xml",
+    sitemap: "https://resum-mu.vercel.app/sitemap.xml",
   };
 }
