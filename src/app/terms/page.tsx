@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FileText, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -23,7 +24,7 @@ export default function TermsPage() {
             href="/"
             className="flex items-center gap-2 font-bold font-heading text-lg"
           >
-            <FileText className="h-4 w-4 text-primary" />
+            <Logo className="h-4 w-4" />
             AI Resume
           </Link>
           <Link

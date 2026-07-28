@@ -8,12 +8,12 @@ export function Footer() {
     <footer className="border-t border-foreground/10 py-12">
       <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex flex-col items-center md:items-start gap-2">
-          <Link
-            href="/"
-            className="flex items-center gap-2 font-bold font-heading text-lg"
-          >
-            <Logo className="h-4 w-4" />
-            Resum
+          <Link href="/" className="flex items-center gap-1.5 group">
+            <Logo className="h-5 w-5" />
+            <span className="text-lg font-bold font-heading tracking-tight">
+              Re<span className="text-primary">s</span>um
+              <span className="text-primary">.</span>
+            </span>
           </Link>
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} AI Resume Builder. All rights reserved.
