@@ -35,7 +35,7 @@ export function Hero() {
                 <Snowflake className="h-4 w-4 text-primary" />
               </div>
               <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
-                AI-Powered Resume Builder
+                Resum — AI-Powered Resume Builder
               </span>
             </motion.div>
 
@@ -56,9 +56,9 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed mb-10"
             >
-              Our AI builds ATS-friendly resumes that actually get read.
-              Upload your existing resume or start fresh you&apos;ll have a
-              polished, recruiter-ready PDF in minutes.
+              Resum uses AI to build ATS-friendly resumes that actually get
+              read. Upload your existing resume or start fresh — you&apos;ll
+              have a polished, recruiter-ready PDF in minutes.
             </motion.p>
 
             <motion.div

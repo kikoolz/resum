@@ -6,12 +6,12 @@ import { Logo } from "@/components/logo";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "Privacy Policy for AI Resume Builder. Learn how we collect, use, and protect your personal information and resume data.",
+    "Privacy Policy for Resum. Learn how we collect, use, and protect your personal information and resume data.",
   openGraph: {
-    title: "Privacy Policy | AI Resume Builder",
+    title: "Privacy Policy | Resum",
     description:
-      "Privacy Policy for AI Resume Builder. Learn how we collect, use, and protect your personal information and resume data.",
-    url: "https://airesume.dev/privacy",
+      "Privacy Policy for Resum. Learn how we collect, use, and protect your personal information and resume data.",
+    url: "https://resum-mu.vercel.app/privacy",
   },
 };
 
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
               1. Introduction
             </h2>
             <p className="mb-4">
-              AI Resume Builder (&quot;we,&quot; &quot;our,&quot; or
+              Resum (&quot;we,&quot; &quot;our,&quot; or
               &quot;us&quot;) is committed to protecting your privacy. This
               Privacy Policy explains how we collect, use, disclose, and
               safeguard your information when you use our AI-powered resume
@@ -441,7 +441,7 @@ export default function PrivacyPage() {
       <footer className="border-t border-foreground/10 py-8">
         <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} AI Resume Builder. All rights
+            © {new Date().getFullYear()} Resum. All rights
             reserved.{" "}
             <Link href="/" className="hover:text-foreground transition-colors">
               Home

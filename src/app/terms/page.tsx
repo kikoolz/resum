@@ -6,12 +6,12 @@ import { Logo } from "@/components/logo";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Terms of Service for AI Resume Builder. Read our terms and conditions for using our AI-powered resume building platform.",
+    "Terms of Service for Resum. Read our terms and conditions for using our AI-powered resume building platform.",
   openGraph: {
-    title: "Terms of Service | AI Resume Builder",
+    title: "Terms of Service | Resum",
     description:
-      "Terms of Service for AI Resume Builder. Read our terms and conditions for using our AI-powered resume building platform.",
-    url: "https://airesume.dev/terms",
+      "Terms of Service for Resum. Read our terms and conditions for using our AI-powered resume building platform.",
+    url: "https://resum-mu.vercel.app/terms",
   },
 };
 
@@ -56,7 +56,7 @@ export default function TermsPage() {
               1. Acceptance of Terms
             </h2>
             <p className="mb-4">
-              By accessing or using AI Resume Builder (&quot;the Service&quot;),
+              By accessing or using Resum (&quot;the Service&quot;),
               you agree to be bound by these Terms of Service (&quot;Terms&quot;).
               If you do not agree to all of these Terms, you may not access or
               use the Service. We reserve the right to modify these Terms at any
@@ -76,7 +76,7 @@ export default function TermsPage() {
               2. Description of Service
             </h2>
             <p className="mb-4">
-              AI Resume Builder is an AI-powered platform that helps users
+              Resum is an AI-powered platform that helps users
               create, edit, and optimize professional resumes and cover letters.
               The Service provides:
             </p>
@@ -178,7 +178,7 @@ export default function TermsPage() {
             </h2>
             <p className="mb-4">
               The Service and its original content, features, functionality,
-              design, and documentation are owned by AI Resume Builder and are
+              design, and documentation are owned by Resum and are
               protected by international copyright, trademark, patent, trade
               secret, and other intellectual property or proprietary rights
               laws.
@@ -394,7 +394,7 @@ export default function TermsPage() {
       <footer className="border-t border-foreground/10 py-8">
         <div className="container mx-auto px-6 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} AI Resume Builder. All rights
+            © {new Date().getFullYear()} Resum. All rights
             reserved.{" "}
             <Link href="/" className="hover:text-foreground transition-colors">
               Home

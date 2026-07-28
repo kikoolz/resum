@@ -16,11 +16,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "AI Resume Builder — Build ATS-Friendly Resumes with AI",
-    template: "%s | AI Resume Builder",
+    default: "Resum — AI-Powered Resume Builder",
+    template: "%s | Resum",
   },
   description:
-    "Build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh. Free plan available.",
+    "Resum is an AI-powered resume builder that helps you create ATS-friendly, recruiter-ready resumes in minutes. Upload an existing resume or start fresh. Free plan available.",
   keywords: [
     "resume builder",
     "AI resume",
@@ -30,19 +30,19 @@ export const metadata: Metadata = {
     "job application",
   ],
   openGraph: {
-    title: "AI Resume Builder — Build ATS-Friendly Resumes with AI",
+    title: "Resum — AI-Powered Resume Builder",
     description:
-      "Build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh.",
-    url: "https://airesume.dev",
-    siteName: "AI Resume Builder",
+      "Resum helps you build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh.",
+    url: "https://resum-mu.vercel.app",
+    siteName: "Resum",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Resume Builder",
+    title: "Resum — AI-Powered Resume Builder",
     description:
-      "Build ATS-friendly, recruiter-ready resumes in minutes with AI.",
+      "Resum helps you build ATS-friendly, recruiter-ready resumes in minutes with AI.",
   },
   robots: {
     index: true,

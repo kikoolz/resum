@@ -16,7 +16,7 @@ export function Footer() {
             </span>
           </Link>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} AI Resume Builder. All rights reserved.
+            © {new Date().getFullYear()} Resum. All rights reserved.
           </p>
         </div>
 
