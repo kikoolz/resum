@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { FileText, Linkedin } from "lucide-react";
+import { Linkedin } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { GithubIcon } from "./github-icon";
 
 export function Footer() {
@@ -11,7 +12,7 @@ export function Footer() {
             href="/"
             className="flex items-center gap-2 font-bold font-heading text-lg"
           >
-            <FileText className="h-4 w-4 text-primary" />
+            <Logo className="h-4 w-4" />
             Resum
           </Link>
           <p className="text-sm text-muted-foreground">

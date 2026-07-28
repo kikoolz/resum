@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
-  FileText,
+
   FileUp,
   LogOut,
   User,
@@ -30,6 +30,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { signOut } from "@/lib/auth-client";
+import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 interface DashboardNavbarProps {
@@ -82,7 +83,7 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
       <div className="container mx-auto flex h-16 items-center px-2 relative">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-1.5 group">
-            <FileText className="h-5 w-5 text-primary" />
+            <Logo className="h-5 w-5" />
             <span className="text-lg font-bold font-heading tracking-tight">
               Re<span className="text-primary">s</span>um
               <span className="text-primary">.</span>

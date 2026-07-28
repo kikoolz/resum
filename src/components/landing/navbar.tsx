@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
-import { FileText, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +14,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full bg-background/90 backdrop-blur-md">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-1.5 group">
-          <FileText className="h-5 w-5 text-primary" />
+          <Logo className="h-5 w-5" />
           <span className="text-lg font-bold font-heading tracking-tight">
             Re<span className="text-primary">s</span>um
             <span className="text-primary">.</span>

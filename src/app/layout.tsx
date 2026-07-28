@@ -21,10 +21,18 @@ export const metadata: Metadata = {
   },
   description:
     "Build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh. Free plan available.",
-  keywords: ["resume builder", "AI resume", "ATS resume", "resume generator", "CV builder", "job application"],
+  keywords: [
+    "resume builder",
+    "AI resume",
+    "ATS resume",
+    "resume generator",
+    "CV builder",
+    "job application",
+  ],
   openGraph: {
     title: "AI Resume Builder — Build ATS-Friendly Resumes with AI",
-    description: "Build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh.",
+    description:
+      "Build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh.",
     url: "https://airesume.dev",
     siteName: "AI Resume Builder",
     locale: "en_US",
@@ -33,7 +41,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AI Resume Builder",
-    description: "Build ATS-friendly, recruiter-ready resumes in minutes with AI.",
+    description:
+      "Build ATS-friendly, recruiter-ready resumes in minutes with AI.",
   },
   robots: {
     index: true,
