@@ -1,5 +1,3 @@
-"use client";
-
 import { Navbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { Stats } from "@/components/landing/stats";
@@ -18,6 +16,7 @@ export default function LandingPage() {
       <Navbar />
 
       <main className="relative z-10">
+        <h1 className="sr-only">Resum — AI-Powered Resume Builder</h1>
         <Hero />
 
         <div className="container mx-auto px-6">
