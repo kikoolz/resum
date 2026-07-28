@@ -1,0 +1,1 @@
+ALTER TABLE `resumes` ADD `layout` text DEFAULT 'single-column' NOT NULL;

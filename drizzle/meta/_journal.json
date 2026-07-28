@@ -1,0 +1,62 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1770998529748,
+      "tag": "0000_calm_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1771002126937,
+      "tag": "0001_loose_zarek",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1771005424291,
+      "tag": "0002_mysterious_dragon_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1771006886526,
+      "tag": "0003_serious_invaders",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1771016434763,
+      "tag": "0004_dapper_blackheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1771057593738,
+      "tag": "0005_clumsy_matthew_murdock",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1771061347260,
+      "tag": "0006_acoustic_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1771271344472,
+      "tag": "0007_aberrant_shape",
+      "breakpoints": true
+    }
+  ]
+}
