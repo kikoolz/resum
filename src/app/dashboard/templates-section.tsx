@@ -10,7 +10,7 @@ import {
   PAGE_PADDING_Y,
   getPreviewFontFamilyCss,
 } from "./editor/[resumeId]/previewConfig";
-import { ArrowRight, MoveRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export default function TemplatesSection() {
   const [selectedTemplate, setSelectedTemplate] =

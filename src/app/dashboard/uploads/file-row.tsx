@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { FileText, Download, Trash2, Wand2, BarChart3 } from "lucide-react";
+import { FileText, Trash2, Wand2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { deleteFile, recreateResumeFromPdf } from "../actions";
 
@@ -87,79 +87,73 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
     const isBusy = isDeleting || isRecreating;
 
     return (
-        <div className="group relative flex flex-col gap-4 overflow-hidden rounded-xl border-4 border-black bg-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-black dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] sm:flex-row sm:items-center">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border-2 border-black bg-red-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:border-white dark:bg-red-900/50 dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                <FileText className="h-6 w-6 text-black dark:text-white" />
+        <div className="group flex flex-col gap-4 border-b border-foreground/10 py-4 last:border-b-0 sm:flex-row sm:items-center sm:gap-6">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+                <FileText className="h-5 w-5 text-muted-foreground" />
             </div>
 
             <div className="min-w-0 flex-1">
-                <p className="truncate font-mono text-lg font-bold uppercase tracking-tight text-foreground">
+                <p className="truncate text-sm font-bold tracking-tight">
                     {file.fileName}
                 </p>
-                <div className="flex items-center gap-2 text-xs font-bold uppercase text-muted-foreground">
-                    <span className="rounded-full bg-black px-2 py-0.5 text-white dark:bg-white dark:text-black">
-                        PDF
-                    </span>
+                <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{formatFileSize(file.fileSize)}</span>
-                    <span>•</span>
+                    <span className="text-foreground/20">/</span>
                     <span>{formatDate(file.createdAt)}</span>
                 </div>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                {/* Recreate as editable resume */}
+            <div className="flex shrink-0 items-center gap-1">
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
                     onClick={handleRecreate}
                     disabled={isBusy}
-                    title="Recreate"
-                    className="h-10 w-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-yellow-300 active:translate-y-0.5 active:shadow-none dark:border-white dark:bg-black dark:text-white dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] dark:hover:bg-yellow-600"
+                    title="Recreate as editable resume"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                     {isRecreating ? (
-                        <Spinner className="h-5 w-5" />
+                        <Spinner className="h-4 w-4" />
                     ) : (
-                        <Wand2 className="h-5 w-5" />
+                        <Wand2 className="h-4 w-4" />
                     )}
                 </Button>
 
-                {/* AI Analysis */}
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
                     onClick={() => onAnalyze(file.id, file.fileName)}
                     disabled={isBusy}
-                    title="Analyze"
-                    className="h-10 w-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-blue-300 active:translate-y-0.5 active:shadow-none dark:border-white dark:bg-black dark:text-white dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] dark:hover:bg-blue-600"
+                    title="AI Analysis"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
-                    <BarChart3 className="h-5 w-5" />
+                    <BarChart3 className="h-4 w-4" />
                 </Button>
 
-                {/* Download */}
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
                     asChild
                     disabled={isBusy}
-                    className="h-10 w-10 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-green-300 active:translate-y-0.5 active:shadow-none dark:border-white dark:bg-black dark:text-white dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] dark:hover:bg-green-600"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                     <a href={file.url} download={file.fileName}>
-                        <Download className="h-5 w-5" />
+                        {/* eslint-disable-next-line jsx-a11y/alt-text */}
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </a>
                 </Button>
 
-                {/* Delete */}
                 <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
                     onClick={handleDelete}
                     disabled={isBusy}
-                    className="h-10 w-10 border-2 border-black bg-red-100 text-red-600 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-red-400 hover:text-black active:translate-y-0.5 active:shadow-none dark:border-white dark:bg-red-900/30 dark:text-red-400 dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] dark:hover:bg-red-700 dark:hover:text-white"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
                 >
                     {isDeleting ? (
-                        <Spinner className="h-5 w-5" />
+                        <Spinner className="h-4 w-4" />
                     ) : (
-                        <Trash2 className="h-5 w-5" />
+                        <Trash2 className="h-4 w-4" />
                     )}
                 </Button>
             </div>

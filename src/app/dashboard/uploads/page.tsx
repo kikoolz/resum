@@ -26,24 +26,29 @@ export default async function UploadsPage() {
     return (
         <div className="container mx-auto flex flex-1 flex-col gap-6 px-4 py-8">
             <div>
-                <h1 className="font-heading text-3xl font-bold capitalize">
+                <div className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                    Manage
+                </div>
+                <h1 className="text-2xl font-bold font-heading tracking-tight">
                     Uploads
                 </h1>
-                <p className="mt-1 text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                     Upload PDF resumes to extract and analyze with AI.
                 </p>
             </div>
+
+            <div className="h-px bg-foreground/10" />
 
             <UploadSection />
 
             {filesWithUrls.length > 0 ? (
                 <UploadsClient files={filesWithUrls} />
             ) : (
-                <div className="flex flex-col items-center justify-center rounded-xl border-4 border-dashed border-muted-foreground/20 bg-muted/10 py-16 text-center">
-                    <p className="font-mono text-lg font-bold text-muted-foreground">
-                        NO FILES YET
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <p className="text-sm font-medium text-muted-foreground">
+                        No files yet
                     </p>
-                    <p className="mt-2 text-sm text-muted-foreground/70">
+                    <p className="mt-1 text-xs text-muted-foreground/70">
                         Upload a PDF above to get started.
                     </p>
                 </div>
