@@ -10,7 +10,7 @@ import {
   PAGE_PADDING_Y,
   getPreviewFontFamilyCss,
 } from "./editor/[resumeId]/previewConfig";
-import { MoveRight } from "lucide-react";
+import { ArrowRight, MoveRight } from "lucide-react";
 
 export default function TemplatesSection() {
   const [selectedTemplate, setSelectedTemplate] =
@@ -127,10 +127,10 @@ function TemplateCard({
 
         {/* Hover overlay */}
         <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/12">
-          <span className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm ">
+          <button className="group/preview translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm cursor-pointer">
             select template
-            <MoveRight className="m-1 h-3 w-3" />
-          </span>
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/preview:translate-x-0.5" />
+          </button>
         </div>
       </div>
 
