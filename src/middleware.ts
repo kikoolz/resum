@@ -15,9 +15,9 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith("/dashboard")) {
-    const sessionToken = request.cookies.get(
-      "better-auth.session_token"
-    )?.value;
+    const sessionToken =
+      request.cookies.get("__Secure-better-auth.session_token")?.value ||
+      request.cookies.get("better-auth.session_token")?.value;
 
     if (!sessionToken) {
       const signInUrl = new URL("/sign-in", request.url);
