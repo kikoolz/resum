@@ -145,13 +145,13 @@ export function TemplatePreviewModal({
                         <div className="flex w-full gap-3 sm:w-auto">
                             <Button
                                 variant="ghost"
-                                className="flex-1 px-6 font-medium tracking-wide text-muted-foreground hover:text-foreground sm:flex-none cursor-pointer"
+                                className="flex-1 rounded-none px-6 font-medium tracking-wide text-muted-foreground hover:text-foreground sm:flex-none cursor-pointer"
                                 onClick={() => onOpenChange(false)}
                             >
                                 Close
                             </Button>
                             <Button
-                                className="group flex-1 bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
+                                className="group flex-1 rounded-none bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
                                 disabled={isCreating}
                                 onClick={handleCreateYours}
                             >
