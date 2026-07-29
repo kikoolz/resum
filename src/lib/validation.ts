@@ -170,3 +170,20 @@ export const resumeSchema = z.object({
 });
 
 export type ResumeValues = z.infer<typeof resumeSchema>;
+
+// ---------------------------------------------------------------------------
+// Cover Letter schema
+// ---------------------------------------------------------------------------
+
+export const coverLetterSchema = z.object({
+    id: z.string().optional(),
+    resumeId: z.string().optional(),
+    title: z.string().trim().max(200).optional(),
+    companyName: z.string().trim().max(200).optional(),
+    jobTitle: z.string().trim().max(200).optional(),
+    jobDescription: z.string().trim().max(5000).optional(),
+    tone: z.enum(["professional", "casual", "enthusiastic", "formal"]).optional(),
+    content: z.string().max(50000).optional(),
+});
+
+export type CoverLetterValues = z.infer<typeof coverLetterSchema>;

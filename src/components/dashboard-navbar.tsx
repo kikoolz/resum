@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
-
   FileUp,
   LogOut,
   User,
   CreditCard,
   LayoutDashboard,
   Menu,
+  Mail,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,12 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
       label: "Dashboard",
       icon: LayoutDashboard,
       active: pathname === "/dashboard",
+    },
+    {
+      href: "/dashboard/cover-letters",
+      label: "Cover Letters",
+      icon: Mail,
+      active: pathname.startsWith("/dashboard/cover-letters"),
     },
     {
       href: "/dashboard/uploads",

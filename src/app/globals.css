@@ -237,6 +237,22 @@
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  .no-print {
+    display: none !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  .print-only {
+    display: block !important;
+  }
+  .no-print {
+    display: none !important;
+  }
 }
 
 /* Rich text content inside templates */

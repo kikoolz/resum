@@ -82,6 +82,7 @@ export const resumesRelations = relations(resumes, ({ many }) => ({
     courses: many(courses),
     resumeReferences: many(resumeReferences),
     interests: many(interests),
+    coverLetters: many(coverLetters),
 }));
 
 // ---------------------------------------------------------------------------
@@ -450,6 +451,43 @@ export const interestsRelations = relations(interests, ({ one }) => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Cover Letters
+// ---------------------------------------------------------------------------
+export const coverLetters = sqliteTable("cover_letters", {
+    id: text("id")
+        .primaryKey()
+        .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id").notNull(),
+    resumeId: text("resume_id").references(() => resumes.id, {
+        onDelete: "set null",
+    }),
+
+    title: text("title"),
+    companyName: text("company_name"),
+    jobTitle: text("job_title"),
+    jobDescription: text("job_description"),
+    tone: text("tone").notNull().default("professional"), // "professional" | "casual" | "enthusiastic" | "formal"
+    content: text("content"), // generated cover letter HTML/text
+
+    createdAt: integer("created_at", { mode: "timestamp" })
+        .notNull()
+        .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+        .notNull()
+        .default(sql`(unixepoch())`)
+        .$onUpdateFn(() => new Date()),
+}, (t) => [
+    index("cover_letters_user_id_idx").on(t.userId),
+]);
+
+export const coverLettersRelations = relations(coverLetters, ({ one }) => ({
+    resume: one(resumes, {
+        fields: [coverLetters.resumeId],
+        references: [resumes.id],
+    }),
+}));
+
+// ---------------------------------------------------------------------------
 // User Subscriptions
 // ---------------------------------------------------------------------------
 export const userSubscriptions = sqliteTable("user_subscriptions", {
@@ -578,6 +616,8 @@ export const schema = {
     resumeReferencesRelations,
     interests,
     interestsRelations,
+    coverLetters,
+    coverLettersRelations,
     userSubscriptions,
     userFiles,
     userFilesRelations,

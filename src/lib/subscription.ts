@@ -1,5 +1,5 @@
 import { getDb } from "@/db";
-import { resumes, userSubscriptions } from "@/db/schema";
+import { resumes, userSubscriptions, coverLetters } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getPlanFromPriceId, isLifetimePriceId, type PlanTier } from "@/lib/stripe";
 
@@ -10,6 +10,7 @@ import { getPlanFromPriceId, isLifetimePriceId, type PlanTier } from "@/lib/stri
 export const PLAN_LIMITS = {
   free: {
     resumes: 3,
+    coverLetters: 0,
     aiTokensMonthly: 50_000,
     aiRecreateMonthly: 1,
     aiAnalyzeMonthly: 1,
@@ -17,6 +18,7 @@ export const PLAN_LIMITS = {
   },
   pro: {
     resumes: Infinity,
+    coverLetters: Infinity,
     aiTokensMonthly: 500_000,
     aiRecreateMonthly: Infinity,
     aiAnalyzeMonthly: Infinity,
@@ -29,6 +31,7 @@ export const PLAN_LIMITS = {
   },
   lifetime: {
     resumes: Infinity,
+    coverLetters: Infinity,
     aiTokensMonthly: 500_000,
     aiRecreateMonthly: Infinity,
     aiAnalyzeMonthly: Infinity,
@@ -122,5 +125,34 @@ export async function getUserPlanInfo(userId: string) {
     subscription,
     renewalDate: subscription?.stripeCurrentPeriodEnd ?? null,
     isCanceled: subscription?.stripeCancelAtPeriodEnd ?? false,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Check if user can create a new cover letter
+// ---------------------------------------------------------------------------
+
+export async function canCreateCoverLetter(
+  userId: string,
+): Promise<{ allowed: boolean; current: number; limit: number }> {
+  const tier = await getUserTier(userId);
+  const limits = PLAN_LIMITS[tier];
+
+  if (tier !== "free") {
+    return { allowed: true, current: 0, limit: Infinity };
+  }
+
+  const db = await getDb();
+  const userCoverLetters = await db.query.coverLetters.findMany({
+    where: eq(coverLetters.userId, userId),
+    columns: { id: true },
+  });
+
+  const current = userCoverLetters.length;
+
+  return {
+    allowed: current < limits.coverLetters,
+    current,
+    limit: limits.coverLetters,
   };
 }

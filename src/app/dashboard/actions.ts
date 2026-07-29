@@ -15,10 +15,11 @@ import {
     interests,
     userFiles,
     aiResults,
+    coverLetters,
 } from "@/db/schema";
 import { list } from "@vercel/blob";
 import { requireSession } from "@/lib/auth-server";
-import { resumeSchema, type ResumeValues } from "@/lib/validation";
+import { resumeSchema, coverLetterSchema, type ResumeValues, type CoverLetterValues } from "@/lib/validation";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -1624,4 +1625,83 @@ Remember: output ONLY the raw HTML file, nothing else. Every word of content mus
                     : "Failed to generate portfolio. Please try again.",
         };
     }
+}
+
+// ---------------------------------------------------------------------------
+// Cover Letter Actions
+// ---------------------------------------------------------------------------
+
+export async function createCoverLetter(resumeId?: string) {
+    const session = await requireSession();
+    const db = await getDb();
+
+    const [coverLetter] = await db
+        .insert(coverLetters)
+        .values({
+            userId: session.user.id,
+            resumeId: resumeId || null,
+            title: "Untitled Cover Letter",
+        })
+        .returning();
+
+    redirect(`/dashboard/cover-letters/${coverLetter.id}`);
+}
+
+export async function saveCoverLetter(values: CoverLetterValues) {
+    const session = await requireSession();
+
+    const parsed = coverLetterSchema.safeParse(values);
+    if (!parsed.success) {
+        return { error: "Invalid cover letter data." };
+    }
+
+    const { id, ...data } = parsed.data;
+    if (!id) return { error: "Cover letter ID is required." };
+
+    const db = await getDb();
+
+    // Verify ownership
+    const existing = await db.query.coverLetters.findFirst({
+        where: and(
+            eq(coverLetters.id, id),
+            eq(coverLetters.userId, session.user.id),
+        ),
+        columns: { id: true },
+    });
+
+    if (!existing) {
+        return { error: "Cover letter not found." };
+    }
+
+    await db
+        .update(coverLetters)
+        .set({
+            ...data,
+            updatedAt: new Date(),
+        })
+        .where(eq(coverLetters.id, id));
+
+    return { success: true };
+}
+
+export async function deleteCoverLetter(coverLetterId: string) {
+    const session = await requireSession();
+    const db = await getDb();
+
+    // Verify ownership
+    const existing = await db.query.coverLetters.findFirst({
+        where: and(
+            eq(coverLetters.id, coverLetterId),
+            eq(coverLetters.userId, session.user.id),
+        ),
+        columns: { id: true },
+    });
+
+    if (!existing) {
+        return { error: "Cover letter not found." };
+    }
+
+    await db.delete(coverLetters).where(eq(coverLetters.id, coverLetterId));
+
+    revalidatePath("/dashboard/cover-letters");
 }
