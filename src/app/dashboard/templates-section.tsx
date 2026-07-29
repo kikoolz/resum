@@ -128,7 +128,7 @@ function TemplateCard({
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/[0.12]">
-                    <span className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex rounded-sm bg-background/80 px-2.5 py-1 text-xs font-medium uppercase tracking-[0.15em] text-foreground backdrop-blur-sm">>
+                    <span className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex rounded-sm bg-background/80 px-2.5 py-1 text-xs font-medium uppercase tracking-[0.15em] text-foreground backdrop-blur-sm">
                         Preview
                     </span>
                 </div>
