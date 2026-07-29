@@ -57,8 +57,8 @@ export function Hero() {
               className="text-lg md:text-xl text-muted-foreground max-w-lg leading-relaxed mb-10"
             >
               Resum uses AI to build ATS-friendly resumes that actually get
-              read. Upload your existing resume or start fresh — you&apos;ll
-              have a polished, recruiter-ready PDF in minutes.
+              read. Upload your existing resume or start fresh you&apos;ll have
+              a polished, recruiter-ready PDF in minutes.
             </motion.p>
 
             <motion.div
@@ -144,10 +144,10 @@ export function Hero() {
                     Summary
                   </h4>
                   <p className="text-[10px] leading-relaxed text-muted-foreground">
-                    Senior Analyst with 5+ years of experience in data
-                    analysis, business intelligence, and process
-                    optimization. Skilled in driving operational efficiency
-                    and leading data-driven strategies.
+                    Senior Analyst with 5+ years of experience in data analysis,
+                    business intelligence, and process optimization. Skilled in
+                    driving operational efficiency and leading data-driven
+                    strategies.
                   </p>
                 </div>
 
@@ -192,8 +192,8 @@ export function Hero() {
                       </p>
                       <ul className="mt-1.5 space-y-1 text-[9px] text-muted-foreground list-disc pl-3">
                         <li>
-                          Spearhead data analysis and reporting for key
-                          business functions
+                          Spearhead data analysis and reporting for key business
+                          functions
                         </li>
                         <li>
                           Conduct in-depth market analysis and competitive
@@ -215,8 +215,8 @@ export function Hero() {
                       </p>
                       <ul className="mt-1.5 space-y-1 text-[9px] text-muted-foreground list-disc pl-3">
                         <li>
-                          Analyzed and interpreted large datasets to
-                          identify opportunities
+                          Analyzed and interpreted large datasets to identify
+                          opportunities
                         </li>
                         <li>
                           Created detailed financial models and dashboards
@@ -272,10 +272,7 @@ export function Hero() {
                 "bg-green-300",
                 "bg-slate-300",
               ].map((color, i) => (
-                <div
-                  key={i}
-                  className={`h-3.5 w-3.5 rounded-full ${color}`}
-                />
+                <div key={i} className={`h-3.5 w-3.5 rounded-full ${color}`} />
               ))}
             </motion.div>
 
@@ -306,8 +303,7 @@ export function Hero() {
               <div className="space-y-2">
                 <div className="bg-muted/50 rounded-lg px-3 py-2">
                   <p className="text-[10px] leading-relaxed">
-                    Analyzed market trends to identify new growth
-                    opportunities.
+                    Analyzed market trends to identify new growth opportunities.
                   </p>
                 </div>
                 <div className="bg-muted/50 rounded-lg px-3 py-2">

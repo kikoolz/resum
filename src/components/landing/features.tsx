@@ -29,7 +29,7 @@ function FeatureItem({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="group relative p-6 rounded-xl border border-foreground/5 bg-card/50 hover:bg-card hover:border-foreground/10 transition-all duration-300 overflow-hidden"
+      className="group relative p-6 rounded-none border border-foreground/5 bg-card/50 hover:bg-card hover:border-foreground/10 transition-all duration-300 overflow-hidden"
     >
       <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[120px] font-black text-foreground/[0.05] leading-none pointer-events-none select-none">
         {number}

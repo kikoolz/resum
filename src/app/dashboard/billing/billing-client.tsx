@@ -4,30 +4,16 @@ import { useState } from "react";
 import { getStripe } from "@/lib/stripe-client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
-  Check,
-  Zap,
   Crown,
   Infinity,
   Loader2,
   ExternalLink,
   Sparkles,
+  Check,
 } from "lucide-react";
-
-// ---------------------------------------------------------------------------
-// Plan definitions
-// ---------------------------------------------------------------------------
 
 const PRO_FEATURES = [
   "Unlimited resumes",
@@ -55,7 +41,6 @@ const PLANS = [
     description: "Get started with the basics",
     price: "$0",
     period: "forever",
-    icon: Zap,
     features: [
       "3 resumes",
       "50,000 AI tokens/month",
@@ -66,7 +51,6 @@ const PLANS = [
       "Basic portfolio link",
     ],
     cta: "Current Plan",
-    popular: false,
   },
   {
     id: "pro",
@@ -75,26 +59,18 @@ const PLANS = [
     monthlyPrice: "$10",
     yearlyPrice: "$96",
     yearlyMonthly: "$8",
-    icon: Crown,
     features: PRO_FEATURES,
     cta: "Upgrade to Pro",
-    popular: true,
   },
   {
     id: "lifetime",
     name: "Lifetime",
     description: "Pay once, use forever",
     price: "$129",
-    icon: Infinity,
     features: LIFETIME_FEATURES,
     cta: "Get Lifetime Access",
-    popular: false,
   },
 ];
-
-// ---------------------------------------------------------------------------
-// Billing Page Component
-// ---------------------------------------------------------------------------
 
 interface BillingPageProps {
   currentTier: string;
@@ -160,26 +136,36 @@ export default function BillingPageClient({
     }
   };
 
-  return (
-    <div className="container mx-auto max-w-5xl px-4 py-8 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Billing & Plans</h1>
-        <p className="mt-1 text-muted-foreground">
-          Choose the plan that fits your job search. Upgrade or downgrade anytime.
-        </p>
-      </div>
+  const isPaid = currentTier !== "free";
 
-      {/* Current Subscription Status */}
-      {currentTier !== "free" && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-12">
+      {/* ── Header ──────────────────────────────────── */}
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        Pricing
+      </p>
+      <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+        Billing & Plans
+      </h1>
+      <p className="mt-3 max-w-lg text-base leading-relaxed text-muted-foreground">
+        Choose the plan that fits your job search. Upgrade or downgrade anytime.
+      </p>
+
+      <div className="my-10 h-px bg-foreground/10" />
+
+      {/* ── Current Subscription ────────────────────── */}
+      {isPaid && (
+        <>
+          <div className="flex flex-col gap-6 border border-foreground/10 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Crown className="h-5 w-5 text-primary" />
-                {currentTier === "lifetime" ? "Lifetime Access" : "Current Subscription"}
-              </CardTitle>
-              <CardDescription>
+              <p className="mb-1 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.2em] text-primary">
+                <Crown className="h-3.5 w-3.5" />
+                Active Plan
+              </p>
+              <h2 className="text-2xl font-black tracking-tight">
+                {currentTier === "lifetime" ? "Lifetime Access" : "Pro Subscription"}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
                 {currentTier === "lifetime"
                   ? "You have lifetime access. No expiration."
                   : isCanceled
@@ -187,207 +173,239 @@ export default function BillingPageClient({
                     : renewalDate
                       ? `Next renewal: ${renewalDate}`
                       : "Active subscription"}
-              </CardDescription>
+              </p>
             </div>
-            <Badge variant={isCanceled ? "destructive" : "default"}>
-              {currentTier === "lifetime" ? "LIFETIME" : currentTier.toUpperCase()}
-            </Badge>
-          </CardHeader>
-          <CardFooter>
-            {currentTier !== "lifetime" && (
-              <Button variant="outline" onClick={handlePortal} disabled={loading === "portal"}>
-                {loading === "portal" ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                )}
-                Manage Subscription
-              </Button>
-            )}
-          </CardFooter>
-        </Card>
+
+            <div className="flex items-center gap-3">
+              <Badge
+                variant={isCanceled ? "destructive" : "default"}
+                className="rounded-none px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest"
+              >
+                {currentTier === "lifetime" ? "LIFETIME" : currentTier.toUpperCase()}
+              </Badge>
+              {currentTier !== "lifetime" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePortal}
+                  disabled={loading === "portal"}
+                  className="rounded-none gap-1.5 px-3 font-medium text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  {loading === "portal" ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  )}
+                  Manage
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <div className="my-10 h-px bg-foreground/10" />
+        </>
       )}
 
-      {/* Billing Toggle (only for Pro) */}
-      <div className="flex items-center justify-center gap-3">
-        <span className={cn("text-sm font-medium", billing === "monthly" ? "text-foreground" : "text-muted-foreground")}>
+      {/* ── Billing Toggle ──────────────────────────── */}
+      <div className="flex items-center justify-center gap-4">
+        <button
+          type="button"
+          onClick={() => setBilling("monthly")}
+          className={cn(
+            "text-sm font-medium transition-colors",
+            billing === "monthly" ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground"
+          )}
+        >
           Monthly
-        </span>
+        </button>
         <button
           type="button"
           onClick={() => setBilling(billing === "monthly" ? "yearly" : "monthly")}
           className={cn(
-            "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out",
-            billing === "yearly" ? "bg-primary" : "bg-muted"
+            "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200",
+            billing === "yearly" ? "bg-foreground" : "bg-foreground/20"
           )}
         >
           <span
             className={cn(
-              "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 ease-in-out",
-              billing === "yearly" ? "translate-x-5" : "translate-x-0"
+              "pointer-events-none inline-block h-4 w-4 translate-y-0.5 rounded-full bg-background transition-transform duration-200",
+              billing === "yearly" ? "translate-x-[18px]" : "translate-x-0.5"
             )}
           />
         </button>
-        <span className={cn("text-sm font-medium", billing === "yearly" ? "text-foreground" : "text-muted-foreground")}>
+        <button
+          type="button"
+          onClick={() => setBilling("monthly")}
+          className={cn(
+            "text-sm font-medium transition-colors",
+            billing === "yearly" ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground"
+          )}
+        >
           Yearly
-        </span>
+        </button>
         {billing === "yearly" && (
-          <Badge variant="secondary" className="text-xs">Save 20%</Badge>
+          <Badge
+            variant="secondary"
+            className="rounded-none px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
+          >
+            Save 20%
+          </Badge>
         )}
       </div>
 
-      {/* Plan Cards */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="my-10 h-px bg-foreground/10" />
+
+      {/* ── Plans ───────────────────────────────────── */}
+      <div className="grid gap-10 md:grid-cols-3 md:gap-8">
         {PLANS.map((plan) => {
           const isCurrent = currentTier === plan.id;
+          const isPro = plan.id === "pro";
 
           return (
-            <Card
-              key={plan.id}
-              className={cn(
-                "relative flex flex-col",
-                plan.popular && "border-primary shadow-lg scale-[1.02]",
-                isCurrent && "border-green-500 bg-green-500/5 dark:bg-green-500/10",
-              )}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground px-3">
-                    Most Popular
-                  </Badge>
-                </div>
-              )}
+            <div key={plan.id} className="flex flex-col border border-foreground/10 p-6">
+              {/* Plan name */}
+              <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                {plan.id === "pro" ? "Recommended" : plan.name}
+              </p>
 
-              <CardHeader className="flex-1">
-                <div className="flex items-center gap-2">
-                  <plan.icon className="h-5 w-5 text-primary" />
-                  <CardTitle>{plan.name}</CardTitle>
-                </div>
-                <CardDescription>{plan.description}</CardDescription>
-                <div className="pt-4">
-                  {plan.id === "pro" ? (
-                    <>
-                      <span className="text-4xl font-bold">
-                        {billing === "yearly" ? plan.yearlyMonthly : plan.monthlyPrice}
-                      </span>
-                      <span className="text-muted-foreground">
-                        {billing === "yearly" ? "/month, billed yearly" : "/month"}
-                      </span>
-                      {billing === "yearly" && (
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          ${plan.yearlyPrice}/year
-                        </p>
-                      )}
-                    </>
-                  ) : plan.id === "lifetime" ? (
-                    <>
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground"> one-time</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground">/forever</span>
-                    </>
-                  )}
-                </div>
-              </CardHeader>
-
-              <CardContent className="flex-1">
-                <ul className="space-y-2">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-
-              <CardFooter>
-                {isCurrent ? (
-                  <Button className="w-full" variant="outline" disabled>
-                    Current Plan
-                  </Button>
-                ) : plan.id === "lifetime" ? (
-                  <Button
-                    className="w-full"
-                    variant="default"
-                    onClick={() => {
-                      if (priceIds.lifetime.payment) {
-                        handleCheckout(priceIds.lifetime.payment, plan.id);
-                      }
-                    }}
-                    disabled={loading !== null}
-                  >
-                    {loading === plan.id ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="mr-2 h-4 w-4" />
+              {/* Price */}
+              <div className="mb-4">
+                {isPro ? (
+                  <>
+                    <span className="text-5xl font-black tracking-tighter">
+                      {billing === "yearly" ? plan.yearlyMonthly : plan.monthlyPrice}
+                    </span>
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      {billing === "yearly" ? "/mo, billed yearly" : "/month"}
+                    </span>
+                    {billing === "yearly" && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {plan.yearlyPrice}/year
+                      </p>
                     )}
-                    {plan.cta}
-                  </Button>
-                ) : plan.id === "pro" ? (
-                  <Button
-                    className="w-full"
-                    variant="default"
-                    onClick={() => {
-                      const priceId = billing === "yearly"
-                        ? priceIds.pro.yearly
-                        : priceIds.pro.monthly;
-                      if (priceId) handleCheckout(priceId, plan.id);
-                    }}
-                    disabled={loading !== null}
-                  >
-                    {loading === plan.id ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    {plan.cta}
-                  </Button>
+                  </>
+                ) : plan.id === "lifetime" ? (
+                  <>
+                    <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
+                    <span className="ml-1 text-sm text-muted-foreground">one-time</span>
+                  </>
                 ) : (
-                  <Button className="w-full" variant="outline" disabled>
-                    {plan.cta}
-                  </Button>
+                  <>
+                    <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
+                    <span className="ml-1 text-sm text-muted-foreground">/forever</span>
+                  </>
                 )}
-              </CardFooter>
-            </Card>
+              </div>
+
+              <p className="mb-6 text-sm text-muted-foreground">{plan.description}</p>
+
+              <div className="mb-6 h-px bg-foreground/10" />
+
+              {/* Features */}
+              <ul className="mb-8 flex-1 space-y-3">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                    <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTA */}
+              {isCurrent ? (
+                <Button
+                  className="w-full rounded-none font-medium cursor-default"
+                  variant="outline"
+                  disabled
+                >
+                  Current Plan
+                </Button>
+              ) : isPro ? (
+                <Button
+                  className="w-full rounded-none font-medium cursor-pointer"
+                  variant="default"
+                  onClick={() => {
+                    const priceId =
+                      billing === "yearly" ? priceIds.pro.yearly : priceIds.pro.monthly;
+                    if (priceId) handleCheckout(priceId, plan.id);
+                  }}
+                  disabled={loading !== null}
+                >
+                  {loading === plan.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  {plan.cta}
+                </Button>
+              ) : plan.id === "lifetime" ? (
+                <Button
+                  className="w-full rounded-none font-medium cursor-pointer"
+                  variant="default"
+                  onClick={() => {
+                    if (priceIds.lifetime.payment) {
+                      handleCheckout(priceIds.lifetime.payment, plan.id);
+                    }
+                  }}
+                  disabled={loading !== null}
+                >
+                  {loading === plan.id ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="mr-2 h-4 w-4" />
+                  )}
+                  {plan.cta}
+                </Button>
+              ) : (
+                <Button
+                  className="w-full rounded-none font-medium cursor-default"
+                  variant="outline"
+                  disabled
+                >
+                  {plan.cta}
+                </Button>
+              )}
+            </div>
           );
         })}
       </div>
 
-      {/* FAQ */}
-      <div className="space-y-4 pt-8">
-        <h2 className="text-xl font-semibold">Frequently Asked Questions</h2>
-        <Separator />
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <h3 className="font-medium">Can I switch plans anytime?</h3>
-            <p className="text-sm text-muted-foreground">
-              Yes! You can upgrade or downgrade at any time. Changes take effect
-              immediately, and we&apos;ll prorate the difference.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">What happens when I downgrade?</h3>
-            <p className="text-sm text-muted-foreground">
-              You&apos;ll keep your current plan until the end of the billing period.
-              After that, you&apos;ll be moved to the Free plan with its limits.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">Do you offer refunds?</h3>
-            <p className="text-sm text-muted-foreground">
-              We offer a 14-day money-back guarantee. If you&apos;re not satisfied,
-              contact us within 14 days for a full refund.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">What&apos;s the difference between Pro and Lifetime?</h3>
-            <p className="text-sm text-muted-foreground">
-              Same features! Pro is $10/month (or $96/year). Lifetime is $129
-              once — pay once and never worry about subscriptions again.
-            </p>
-          </div>
+      <div className="my-12 h-px bg-foreground/10" />
+
+      {/* ── FAQ ─────────────────────────────────────── */}
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        Common Questions
+      </p>
+      <h2 className="mb-8 text-2xl font-black tracking-tight">Frequently Asked</h2>
+
+      <div className="grid gap-x-12 gap-y-8 md:grid-cols-2">
+        <div>
+          <h3 className="mb-1 text-sm font-semibold">Can I switch plans anytime?</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Yes! You can upgrade or downgrade at any time. Changes take effect
+            immediately, and we&apos;ll prorate the difference.
+          </p>
+        </div>
+        <div>
+          <h3 className="mb-1 text-sm font-semibold">What happens when I downgrade?</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            You&apos;ll keep your current plan until the end of the billing period.
+            After that, you&apos;ll be moved to the Free plan with its limits.
+          </p>
+        </div>
+        <div>
+          <h3 className="mb-1 text-sm font-semibold">Do you offer refunds?</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            We offer a 14-day money-back guarantee. If you&apos;re not satisfied,
+            contact us within 14 days for a full refund.
+          </p>
+        </div>
+        <div>
+          <h3 className="mb-1 text-sm font-semibold">
+            What&apos;s the difference between Pro and Lifetime?
+          </h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Same features! Pro is $10/month (or $96/year). Lifetime is $129
+            once — pay once and never worry about subscriptions again.
+          </p>
         </div>
       </div>
     </div>
