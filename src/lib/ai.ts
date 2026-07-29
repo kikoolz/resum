@@ -1,6 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-const MODEL_ID = "google-ai-studio/gemini-2.5-flash";
+const MODEL_ID = "gemini-2.5-flash";
 
 let cachedProvider: ReturnType<typeof createGoogleGenerativeAI> | null = null;
 
