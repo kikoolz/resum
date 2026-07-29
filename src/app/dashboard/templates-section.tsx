@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Card } from "@/components/ui/card";
 import { sampleTemplates, type SampleTemplate } from "./sample-templates";
 import { TemplatePreviewModal } from "./template-preview-modal";
 import ResumeTemplate from "./editor/[resumeId]/ResumeTemplate";
@@ -26,16 +25,23 @@ export default function TemplatesSection() {
     }
 
     return (
-        <div className="mt-12">
-            <h2 className="mb-4 text-2xl font-bold">Templates</h2>
-            <p className="mb-6 text-muted-foreground">
-                Choose a template to get started quickly
+        <div className="mt-16">
+            <div className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Get Started
+            </div>
+            <h2 className="text-3xl font-black tracking-tight">Templates</h2>
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                Choose a template to get started quickly. Each one is fully customizable once you start editing.
             </p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {sampleTemplates.map((template) => (
+
+            <div className="mt-8 h-px bg-foreground/10" />
+
+            <div className="grid grid-cols-1 gap-6 pt-8 sm:grid-cols-2 lg:grid-cols-4">
+                {sampleTemplates.map((template, index) => (
                     <TemplateCard
                         key={template.name}
                         template={template}
+                        index={index + 1}
                         onClick={() => handleTemplateClick(template.name)}
                     />
                 ))}
@@ -51,14 +57,16 @@ export default function TemplatesSection() {
 }
 
 // ---------------------------------------------------------------------------
-// Template Card with live rendered preview
+// Template Card with live rendered preview — Editorial style
 // ---------------------------------------------------------------------------
 
 function TemplateCard({
     template,
+    index,
     onClick,
 }: {
     template: SampleTemplate;
+    index: number;
     onClick: () => void;
 }) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -84,14 +92,14 @@ function TemplateCard({
     const scaledHeight = PAGE_WIDTH * (297 / 210) * scale;
 
     return (
-        <Card
+        <div
             onClick={onClick}
-            className="group relative cursor-pointer overflow-hidden p-0 template-card"
+            className="group cursor-pointer"
         >
             {/* Live rendered preview */}
             <div
                 ref={containerRef}
-                className="relative w-full overflow-hidden bg-white border-b"
+                className="relative w-full overflow-hidden bg-white"
                 style={{ height: scaledHeight }}
             >
                 {mounted && (
@@ -117,27 +125,27 @@ function TemplateCard({
                         </div>
                     </div>
                 )}
-            </div>
 
-            {/* Select overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/50">
-                <div className="translate-y-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="inline-flex items-center gap-2 bg-background/95 backdrop-blur-sm text-foreground text-base font-medium px-5 py-2.5 tracking-wide font-heading">
-                        Select Template
-                        <svg className="h-3.5 w-3.5 animate-none group-hover:animate-[arrowSlide_0.6s_ease-in-out_infinite]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
+                {/* Hover overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/[0.04]">
+                    <span className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 text-xs font-medium uppercase tracking-[0.15em] text-foreground/70">
+                        Preview
                     </span>
                 </div>
             </div>
 
             {/* Card info */}
-            <div className="p-3">
-                <h3 className="text-sm font-medium">{template.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                    {template.description}
-                </p>
+            <div className="mt-3 flex items-start justify-between">
+                <div>
+                    <h3 className="text-sm font-bold tracking-tight">{template.name}</h3>
+                    <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
+                        {template.description}
+                    </p>
+                </div>
+                <span className="text-[10px] font-medium text-muted-foreground/60 tabular-nums">
+                    {String(index).padStart(2, "0")}
+                </span>
             </div>
-        </Card>
+        </div>
     );
 }

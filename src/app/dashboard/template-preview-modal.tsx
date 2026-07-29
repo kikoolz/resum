@@ -9,7 +9,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import ResumeTemplate from "./editor/[resumeId]/ResumeTemplate";
 import {
     PAGE_WIDTH,
@@ -78,29 +78,35 @@ export function TemplatePreviewModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex h-[90vh] w-[95vw] max-w-5xl flex-col gap-0 overflow-hidden border-2 border-foreground p-0 shadow-[8px_8px_0px_0px_var(--color-foreground)] sm:rounded-none">
+            <DialogContent className="flex h-[90vh] w-[95vw] max-w-6xl flex-col gap-0 overflow-hidden rounded-none border-none p-0 shadow-none">
                 {/* Header */}
-                <DialogHeader className="flex-none border-b-2 border-foreground px-6 py-4">
-                    <div className="flex items-center justify-between">
+                <DialogHeader className="flex-none px-8 pb-6 pt-8">
+                    <div className="flex items-start justify-between gap-8">
                         <div>
-                            <DialogTitle className="text-xl font-black uppercase tracking-tight">
-                                {template.name} Template
-                            </DialogTitle>
-                            <DialogDescription className="text-sm font-medium text-muted-foreground">
-                                {template.description}
+                            <DialogDescription className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                                Template Preview
                             </DialogDescription>
+                            <DialogTitle className="text-3xl font-black tracking-tight md:text-4xl">
+                                {template.name}
+                            </DialogTitle>
+                            <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+                                {template.description}
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>
 
+                {/* Thin divider */}
+                <div className="mx-8 h-px bg-foreground/10" />
+
                 {/* Preview Area */}
                 <div
                     ref={wrapperRef}
-                    className="flex-1 overflow-auto bg-muted/30"
+                    className="flex-1 overflow-auto bg-muted/20"
                 >
-                    <div className="flex items-center justify-center p-6" style={{ minHeight: "100%" }}>
+                    <div className="flex items-center justify-center p-8" style={{ minHeight: "100%" }}>
                         <div
-                            className="bg-white shadow-[4px_4px_0px_0px_var(--color-foreground)] border-2 border-foreground"
+                            className="bg-white shadow-lg"
                             style={{
                                 width: PAGE_WIDTH * scale,
                                 height: pageHeight * scale,
@@ -127,32 +133,38 @@ export function TemplatePreviewModal({
                     </div>
                 </div>
 
+                {/* Thin divider */}
+                <div className="mx-8 h-px bg-foreground/10" />
+
                 {/* Footer */}
-                <div className="flex-none border-t-2 border-foreground bg-card px-6 py-4">
+                <div className="flex-none bg-background px-8 py-6">
                     <div className="flex items-center justify-between gap-4">
-                        <p className="hidden text-sm font-medium text-muted-foreground sm:block">
-                            Use this template as a starting point
+                        <p className="hidden text-xs uppercase tracking-[0.15em] text-muted-foreground sm:block">
+                            Use as a starting point
                         </p>
                         <div className="flex w-full gap-3 sm:w-auto">
                             <Button
-                                variant="outline"
-                                className="flex-1 border-2 border-foreground font-bold shadow-[3px_3px_0px_0px_var(--color-foreground)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_var(--color-foreground)] sm:flex-none cursor-pointer"
+                                variant="ghost"
+                                className="flex-1 px-6 font-medium tracking-wide text-muted-foreground hover:text-foreground sm:flex-none cursor-pointer"
                                 onClick={() => onOpenChange(false)}
                             >
                                 Close
                             </Button>
                             <Button
-                                className="flex-1 border-2 border-foreground bg-primary font-bold text-primary-foreground shadow-[3px_3px_0px_0px_var(--color-foreground)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_var(--color-foreground)] sm:flex-none cursor-pointer"
+                                className="group flex-1 bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
                                 disabled={isCreating}
                                 onClick={handleCreateYours}
                             >
                                 {isCreating ? (
                                     <>
                                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Creating…
+                                        Creating...
                                     </>
                                 ) : (
-                                    "Create Yours"
+                                    <>
+                                        Use This Template
+                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                                    </>
                                 )}
                             </Button>
                         </div>
