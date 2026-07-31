@@ -131,7 +131,13 @@ function buildUserMessage(input: GenerateCoverLetterInput): string {
     // Job context
     if (input.companyName) parts.push(`Company: ${input.companyName}`);
     if (input.jobTitle) parts.push(`Position: ${input.jobTitle}`);
-    if (input.jobDescription) parts.push(`Job description:\n${input.jobDescription}`);
+    if (input.jobDescription) {
+        const maxLen = 2000;
+        const desc = input.jobDescription.length > maxLen
+            ? input.jobDescription.slice(0, maxLen) + "..."
+            : input.jobDescription;
+        parts.push(`Job description:\n${desc}`);
+    }
 
     return parts.join("\n\n");
 }
@@ -168,17 +174,17 @@ export async function generateCoverLetter(
         const tone = input.tone || "professional";
         const systemPrompt = buildSystemPrompt(tone);
         const userMessage = buildUserMessage(input);
-        const model = await getAiModel();
+        const model = getAiModel();
 
         const { text, usage } = await generateText({
             model,
             system: systemPrompt,
             messages: [{ role: "user", content: userMessage }],
-            maxRetries: 1,
+            maxRetries: 2,
         });
 
         // Log token usage
-        await logAiUsage(userId, usage, "enhance");
+        await logAiUsage(userId, usage, "cover_letter");
 
         const trimmed = text.trim();
         if (!trimmed) {

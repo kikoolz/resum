@@ -127,9 +127,9 @@ function TemplateCard({
 
         {/* Hover overlay */}
         <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/12">
-          <button className="group/preview translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm cursor-pointer">
+          <button className="group/preview translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm cursor-pointer font-heading">
             select template
-            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/preview:translate-x-0.5" />
+            <ArrowRight className="ml-2 h-4 w-4 animate-[arrowSlide_0.8s_ease-in-out_infinite]" />
           </button>
         </div>
       </div>

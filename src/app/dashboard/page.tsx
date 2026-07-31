@@ -62,7 +62,11 @@ export default async function DashboardPage() {
         </div>
         {userResumes.length > 0 && (
           <form action={createResume}>
-            <Button type="submit" disabled={atLimit} className="rounded-none">
+            <Button
+              type="submit"
+              disabled={atLimit}
+              className="font-bold rounded-none"
+            >
               {atLimit ? (
                 <>
                   <Lock className="mr-1.5 h-4 w-4" />
@@ -103,7 +107,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
           {/* Create New Card */}
           {canCreate ? (
-            <div className="group overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/25 bg-card transition-all hover:border-primary/50 hover:shadow-md">
+            <div className="group overflow-hidden rounded-none border-2 border-dashed border-muted-foreground/25 bg-card transition-all hover:border-primary/50 hover:shadow-md">
               <form action={createResume} className="h-full">
                 <button
                   type="submit"
@@ -118,7 +122,7 @@ export default async function DashboardPage() {
               </form>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-lg border-2 border-dashed border-muted-foreground/15 bg-card opacity-50">
+            <div className="overflow-hidden rounded-none border-2 border-dashed border-muted-foreground/15 bg-card opacity-50">
               <div
                 className="flex w-full flex-col items-center justify-center gap-3 text-muted-foreground"
                 style={{ aspectRatio: "210 / 297" }}

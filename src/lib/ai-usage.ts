@@ -11,7 +11,7 @@ import { getUserTier, PLAN_LIMITS } from "@/lib/subscription";
 export async function logAiUsage(
     userId: string,
     usage: { inputTokens?: number; outputTokens?: number; totalTokens?: number },
-    featureType: "enhance" | "recreate" | "analyze" | "portfolio",
+    featureType: "enhance" | "recreate" | "analyze" | "portfolio" | "cover_letter",
 ) {
     const db = await getDb();
     await db.insert(aiUsageLogs).values({

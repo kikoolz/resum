@@ -1631,6 +1631,55 @@ Remember: output ONLY the raw HTML file, nothing else. Every word of content mus
 // Cover Letter Actions
 // ---------------------------------------------------------------------------
 
+export async function getResumeForCoverLetter(resumeId: string) {
+    const session = await requireSession();
+    const db = await getDb();
+
+    const resume = await db.query.resumes.findFirst({
+        where: and(
+            eq(resumes.id, resumeId),
+            eq(resumes.userId, session.user.id),
+        ),
+        with: {
+            workExperiences: true,
+            educations: true,
+            projects: true,
+        },
+    });
+
+    if (!resume) return null;
+
+    return {
+        firstName: resume.firstName,
+        lastName: resume.lastName,
+        jobTitle: resume.jobTitle,
+        email: resume.email,
+        phone: resume.phone,
+        city: resume.city,
+        country: resume.country,
+        summary: resume.summary,
+        skills: resume.skills,
+        workExperiences: resume.workExperiences.map((w) => ({
+            position: w.position,
+            company: w.company,
+            description: w.description,
+            location: w.location,
+            startDate: w.startDate,
+            endDate: w.endDate,
+        })),
+        educations: resume.educations.map((e) => ({
+            degree: e.degree,
+            school: e.school,
+            fieldOfStudy: e.fieldOfStudy,
+            description: e.description,
+        })),
+        projects: resume.projects.map((p) => ({
+            title: p.title,
+            description: p.description,
+        })),
+    };
+}
+
 export async function createCoverLetter(resumeId?: string) {
     const session = await requireSession();
     const db = await getDb();

@@ -1,10 +1,16 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
-const MODEL_ID = "gemini-3.5-flash";
+const MODELS = [
+  "gemini-3.5-flash-lite",
+  "gemini-3.6-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-2.5-flash",
+];
 
 let cachedProvider: ReturnType<typeof createGoogleGenerativeAI> | null = null;
 
-export function getAiModel() {
+function getProvider() {
   if (!cachedProvider) {
     const apiKey = process.env.GOOGLE_AI_STUDIO_API_KEY;
     if (!apiKey) {
@@ -12,7 +18,16 @@ export function getAiModel() {
     }
     cachedProvider = createGoogleGenerativeAI({ apiKey });
   }
-  return cachedProvider(MODEL_ID);
+  return cachedProvider;
 }
 
-export { MODEL_ID };
+export function getAiModel() {
+  return getProvider()(MODELS[0]);
+}
+
+export function getAiModelWithFallback() {
+  const provider = getProvider();
+  return MODELS.map((id) => provider(id));
+}
+
+export const MODEL_ID = MODELS[0];
