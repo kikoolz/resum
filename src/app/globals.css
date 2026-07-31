@@ -51,7 +51,7 @@
 	--radius-3xl: calc(var(--radius) + 12px);
 	--radius-4xl: calc(var(--radius) + 16px);
 	--font-serif: serif;
-	--radius: 0.75rem;
+	--radius: 0px;
 	--tracking-tighter: calc(var(--tracking-normal) - 0.05em);
 	--tracking-tight: calc(var(--tracking-normal) - 0.025em);
 	--tracking-wide: calc(var(--tracking-normal) + 0.025em);
@@ -78,7 +78,7 @@
 }
 
 :root {
-	--radius: 0.75rem;
+	--radius: 0px;
 	--background: oklch(1.0000 0 0);
 	--foreground: oklch(0.2101 0.0318 264.6645);
 	--card: oklch(1.0000 0 0);
@@ -278,4 +278,12 @@
 .template-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+div, span, input, textarea, select {
+  border-radius: 0 !important;
+}
+
+[class*="rounded-full"] {
+  border-radius: 9999px !important;
 }
