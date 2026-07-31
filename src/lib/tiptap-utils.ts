@@ -263,8 +263,6 @@ export function findNodePosition(props: {
     let foundNode: PMNode | null = null
 
     editor.state.doc.descendants((currentNode, pos) => {
-      // TODO: Needed?
-      // if (currentNode.type && currentNode.type.name === node!.type.name) {
       if (currentNode === node) {
         foundPos = pos
         foundNode = currentNode
@@ -375,7 +373,6 @@ export const handleImageUpload = async (
   onProgress?: (event: { progress: number }) => void,
   abortSignal?: AbortSignal
 ): Promise<string> => {
-  // Validate file
   if (!file) {
     throw new Error("No file provided")
   }
@@ -386,17 +383,26 @@ export const handleImageUpload = async (
     )
   }
 
-  // For demo/testing: Simulate upload progress. In production, replace the following code
-  // with your own upload implementation.
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled")
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onProgress?.({ progress })
+  onProgress?.({ progress: 0 })
+
+  const formData = new FormData()
+  formData.append("file", file)
+
+  const res = await fetch("/api/files/upload-image", {
+    method: "POST",
+    body: formData,
+    signal: abortSignal,
+  })
+
+  onProgress?.({ progress: 100 })
+
+  const data = (await res.json()) as { success?: boolean; url?: string; error?: string }
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.error || "Upload failed")
   }
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+  return data.url!
 }
 
 type ProtocolOptions = {

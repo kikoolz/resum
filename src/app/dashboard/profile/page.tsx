@@ -233,14 +233,14 @@ export default async function ProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Progress value={aiUsage.usagePercent} className="h-3" />
-                    {/* <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">
                             {aiUsage.totalTokens.toLocaleString()} / {aiUsage.limit.toLocaleString()} tokens
                         </span>
                         <span className="text-muted-foreground">
                             {aiUsage.callCount} AI {aiUsage.callCount === 1 ? "call" : "calls"} this month
                         </span>
-                    </div> */}
+                    </div>
                     {aiUsage.usagePercent >= 90 && (
                         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
                             You&apos;re approaching your monthly AI limit. Upgrade to premium for unlimited access.
