@@ -127,9 +127,10 @@ function DraggableSectionItem({
 
 interface ResumeEditorProps {
     resumeToEdit: ResumeServerData | null;
+    userTier: "free" | "pro" | "lifetime";
 }
 
-export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
+export default function ResumeEditor({ resumeToEdit, userTier }: ResumeEditorProps) {
     const [resumeData, setResumeData] = useState<ResumeValues>(
         resumeToEdit ? mapToResumeValues(resumeToEdit) : {},
     );
@@ -400,6 +401,7 @@ export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
                         previewSettings={previewSettings}
                         onPreviewSettingsChange={setPreviewSettings}
                         onPreviewOpen={() => setPreviewOpen(true)}
+                        userTier={userTier}
                         className={cn(showSmResumePreview && "flex")}
                     />
                 </div>
@@ -428,6 +430,7 @@ export default function ResumeEditor({ resumeToEdit }: ResumeEditorProps) {
                 onOpenChange={setPreviewOpen}
                 resumeData={resumeData}
                 previewSettings={previewSettings}
+                userTier={userTier}
             />
             <PortfolioModal
                 open={portfolioOpen}

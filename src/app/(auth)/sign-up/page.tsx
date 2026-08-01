@@ -1,19 +1,29 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn, signUp } from "@/lib/auth-client";
 import { Loader2, ArrowRight, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { DoodleBackground } from "../doodle-background";
 
 export default function SignUp() {
+  const searchParams = useSearchParams();
+  const referralCode = searchParams.get("ref");
+
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (referralCode) {
+      localStorage.setItem("pendingReferral", referralCode);
+    }
+  }, [referralCode]);
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();

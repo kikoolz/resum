@@ -590,6 +590,44 @@ export const aiUsageLogs = sqliteTable("ai_usage_logs", {
 });
 
 // ---------------------------------------------------------------------------
+// Referrals
+// ---------------------------------------------------------------------------
+export const referrals = sqliteTable(
+    "referrals",
+    {
+        id: text("id")
+            .primaryKey()
+            .$defaultFn(() => crypto.randomUUID()),
+        referrerUserId: text("referrer_user_id").notNull(),
+        referredUserId: text("referred_user_id").notNull().unique(),
+        referralCode: text("referral_code").notNull(),
+        rewardGranted: integer("reward_granted", { mode: "boolean" })
+            .notNull()
+            .default(false),
+        createdAt: integer("created_at", { mode: "timestamp" })
+            .notNull()
+            .default(sql`(unixepoch())`),
+    },
+    (table) => [
+        index("referrals_referrer_user_id_idx").on(table.referrerUserId),
+        index("referrals_referral_code_idx").on(table.referralCode),
+    ],
+);
+
+export const referralsRelations = relations(referrals, ({ one }) => ({
+    referrer: one(authSchema.users, {
+        fields: [referrals.referrerUserId],
+        references: [authSchema.users.id],
+        relationName: "referrer",
+    }),
+    referred: one(authSchema.users, {
+        fields: [referrals.referredUserId],
+        references: [authSchema.users.id],
+        relationName: "referred",
+    }),
+}));
+
+// ---------------------------------------------------------------------------
 // Combine all schemas here for migrations
 // ---------------------------------------------------------------------------
 export const schema = {
@@ -624,4 +662,6 @@ export const schema = {
     aiResults,
     aiResultsRelations,
     aiUsageLogs,
+    referrals,
+    referralsRelations,
 } as const;

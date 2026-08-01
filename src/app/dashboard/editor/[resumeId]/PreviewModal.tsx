@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Printer, X } from "lucide-react";
+import { FileDown, Printer, X } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import type { ResumeValues } from "@/lib/validation";
 import PrintableResume from "./PrintableResume";
@@ -30,6 +30,7 @@ interface PreviewModalProps {
     onOpenChange: (open: boolean) => void;
     resumeData: ResumeValues;
     previewSettings: PreviewSettings;
+    userTier?: "free" | "pro" | "lifetime";
 }
 
 export default function PreviewModal({
@@ -37,6 +38,7 @@ export default function PreviewModal({
     onOpenChange,
     resumeData,
     previewSettings,
+    userTier,
 }: PreviewModalProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
@@ -81,6 +83,27 @@ export default function PreviewModal({
         },
     });
 
+    async function handleDocxDownload() {
+        if (!resumeData.id) return;
+        try {
+            const res = await fetch("/api/export-docx", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ resumeId: resumeData.id }),
+            });
+            if (!res.ok) throw new Error("Export failed");
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${(resumeData.firstName || "resume").replace(/\s+/g, "_")}_${(resumeData.lastName || "").replace(/\s+/g, "_")}_resume.docx`.replace(/^_/, "");
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("DOCX export error:", err);
+        }
+    }
+
     useEffect(() => {
         if (!open) return;
 
@@ -122,6 +145,14 @@ export default function PreviewModal({
                             >
                                 <Printer className="mr-1.5 h-4 w-4" />
                                 Print / PDF
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleDocxDownload}
+                            >
+                                <FileDown className="mr-1.5 h-4 w-4" />
+                                DOCX
                             </Button>
                             <DialogClose asChild>
                                 <Button
@@ -214,7 +245,7 @@ export default function PreviewModal({
                     </ScrollArea>
                 </div>
 
-                <PrintableResume ref={printRef} resumeData={resumeData} />
+                <PrintableResume ref={printRef} resumeData={resumeData} userTier={userTier} />
             </DialogContent>
         </Dialog>
     );

@@ -14,6 +14,7 @@ import { ResumePageFlow, useResumePagination } from "./resumePagination";
 
 interface PrintableResumeProps {
     resumeData: ResumeValues;
+    userTier?: "free" | "pro" | "lifetime";
 }
 
 function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
@@ -73,7 +74,7 @@ function getPageBackground(templateName: string | undefined, colorHex: string | 
 }
 
 const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
-    function PrintableResume({ resumeData }, ref) {
+    function PrintableResume({ resumeData, userTier }, ref) {
         const fontScale = (resumeData.fontSize ?? 10) / 10;
         const fontFamilyCss = getPreviewFontFamilyCss(resumeData.fontFamily);
         const pageBackground = getPageBackground(resumeData.templateName, resumeData.colorHex);
@@ -165,6 +166,32 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
                                     printPaddingY={PAGE_PADDING_Y}
                                 />
                             </div>
+                            {userTier === "free" && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        inset: 0,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        overflow: "hidden",
+                                        pointerEvents: "none",
+                                    }}
+                                >
+                                    <div
+                                        style={{
+                                            transform: "rotate(-45deg)",
+                                            fontSize: "64px",
+                                            fontWeight: 700,
+                                            color: "rgba(0,0,0,0.04)",
+                                            whiteSpace: "nowrap",
+                                            userSelect: "none",
+                                        }}
+                                    >
+                                        Made with Resum
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>

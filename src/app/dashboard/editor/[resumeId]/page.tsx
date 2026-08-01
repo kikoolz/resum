@@ -1,6 +1,7 @@
 import { getDb } from "@/db";
 import { resumes } from "@/db/schema";
 import { requireSession } from "@/lib/auth-server";
+import { getUserTier } from "@/lib/subscription";
 import { eq, and } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -44,6 +45,8 @@ export default async function EditorPage({ params }: EditorPageProps) {
         resumeToEdit = result;
     }
 
+    const userTier = await getUserTier(session.user.id);
+
     return (
         <Suspense
             fallback={
@@ -55,7 +58,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
             }
         >
             <div className="h-[calc(100dvh-4rem)] w-full overflow-hidden">
-                <ResumeEditor resumeToEdit={resumeToEdit} />
+                <ResumeEditor resumeToEdit={resumeToEdit} userTier={userTier} />
             </div>
         </Suspense>
     );

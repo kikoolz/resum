@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { sampleTemplates, type SampleTemplate } from "./sample-templates";
 import { TemplatePreviewModal } from "./template-preview-modal";
 import ResumeTemplate from "./editor/[resumeId]/ResumeTemplate";
@@ -10,12 +11,15 @@ import {
   PAGE_PADDING_Y,
   getPreviewFontFamilyCss,
 } from "./editor/[resumeId]/previewConfig";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
+import { PLAN_LIMITS, type PlanTier } from "@/lib/subscription";
 
-export default function TemplatesSection() {
+export default function TemplatesSection({ userTier }: { userTier?: PlanTier }) {
   const [selectedTemplate, setSelectedTemplate] =
     useState<SampleTemplate | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const allowedTemplates = userTier ? PLAN_LIMITS[userTier].templates : PLAN_LIMITS.free.templates;
 
   function handleTemplateClick(templateName: string) {
     const template = sampleTemplates.find((t) => t.name === templateName);
@@ -44,6 +48,7 @@ export default function TemplatesSection() {
             key={template.name}
             template={template}
             index={index + 1}
+            isLocked={!allowedTemplates.includes(template.data.templateName as typeof allowedTemplates[number])}
             onClick={() => handleTemplateClick(template.name)}
           />
         ))}
@@ -53,6 +58,7 @@ export default function TemplatesSection() {
         template={selectedTemplate}
         open={modalOpen}
         onOpenChange={setModalOpen}
+        userTier={userTier}
       />
     </div>
   );
@@ -65,10 +71,12 @@ export default function TemplatesSection() {
 function TemplateCard({
   template,
   index,
+  isLocked,
   onClick,
 }: {
   template: SampleTemplate;
   index: number;
+  isLocked: boolean;
   onClick: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,11 +135,28 @@ function TemplateCard({
 
         {/* Hover overlay */}
         <div className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-all duration-300 group-hover:bg-foreground/12">
-          <button className="group/preview translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm cursor-pointer font-heading">
-            select template
-            <ArrowRight className="ml-2 h-4 w-4 animate-[arrowSlide_0.8s_ease-in-out_infinite]" />
-          </button>
+          {isLocked ? (
+            <span className="translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex items-center gap-1.5 bg-foreground/80 px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm font-heading">
+              <Lock className="h-3 w-3" />
+              Pro
+            </span>
+          ) : (
+            <button className="group/preview translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 inline-flex bg-primary px-3 py-2 text-xs font-bold uppercase tracking-[0.15em] text-background/80 backdrop-blur-sm cursor-pointer font-heading">
+              select template
+              <ArrowRight className="ml-2 h-4 w-4 animate-[arrowSlide_0.8s_ease-in-out_infinite]" />
+            </button>
+          )}
         </div>
+
+        {/* Lock badge */}
+        {isLocked && (
+          <div className="absolute top-2 right-2">
+            <span className="inline-flex items-center gap-1 bg-foreground/80 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-background/80 backdrop-blur-sm font-heading">
+              <Lock className="h-2.5 w-2.5" />
+              Pro
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Card info */}

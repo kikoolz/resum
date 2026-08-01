@@ -3,6 +3,7 @@ import { stripe, isLifetimePriceId } from "@/lib/stripe";
 import { getDb } from "@/db";
 import { userSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { grantReferralReward } from "@/lib/referrals";
 import Stripe from "stripe";
 
 // Disable body parsing — Stripe needs the raw body for signature verification
@@ -60,6 +61,13 @@ export async function POST(req: NextRequest) {
             })
             .where(eq(userSubscriptions.userId, userId));
 
+          // Grant referral reward for lifetime purchases too
+          try {
+            await grantReferralReward(userId);
+          } catch (err) {
+            console.error("[Webhook] Failed to grant referral reward:", err);
+          }
+
           break;
         }
 
@@ -80,11 +88,18 @@ export async function POST(req: NextRequest) {
           })
           .where(eq(userSubscriptions.userId, userId));
 
+        // Grant referral reward if this user was referred
+        try {
+          await grantReferralReward(userId);
+        } catch (err) {
+          console.error("[Webhook] Failed to grant referral reward:", err);
+        }
+
         break;
       }
 
-      // -----------------------------------------------------------------------
-      // Subscription updated — renewal, plan change, or cancellation
+    // -----------------------------------------------------------------------
+    // Subscription updated — renewal, plan change, or cancellation
       // -----------------------------------------------------------------------
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;

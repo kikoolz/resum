@@ -11,7 +11,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { FileText, Maximize2, Minus, Plus, Printer } from "lucide-react";
+import { FileText, FileDown, Maximize2, Minus, Plus, Printer } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import type { ResumeValues } from "@/lib/validation";
 import PrintableResume from "./PrintableResume";
@@ -36,6 +36,7 @@ interface ResumePreviewSectionProps {
     previewSettings: PreviewSettings;
     onPreviewSettingsChange: Dispatch<SetStateAction<PreviewSettings>>;
     onPreviewOpen?: () => void;
+    userTier?: "free" | "pro" | "lifetime";
     className?: string;
 }
 
@@ -45,6 +46,7 @@ export default function ResumePreviewSection({
     previewSettings,
     onPreviewSettingsChange,
     onPreviewOpen,
+    userTier,
     className,
 }: ResumePreviewSectionProps) {
     const fontSize = previewSettings.fontSize;
@@ -90,6 +92,27 @@ export default function ResumePreviewSection({
             );
         },
     });
+
+    async function handleDocxDownload() {
+        if (!resumeData.id) return;
+        try {
+            const res = await fetch("/api/export-docx", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ resumeId: resumeData.id }),
+            });
+            if (!res.ok) throw new Error("Export failed");
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${(resumeData.firstName || "resume").replace(/\s+/g, "_")}_${(resumeData.lastName || "").replace(/\s+/g, "_")}_resume.docx`.replace(/^_/, "");
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("DOCX export error:", err);
+        }
+    }
 
     useEffect(() => {
         const element = containerRef.current;
@@ -253,6 +276,16 @@ export default function ResumePreviewSection({
                             <Printer className="h-4 w-4" />
                         </Button>
 
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:bg-muted"
+                            onClick={handleDocxDownload}
+                            title="Download as DOCX"
+                        >
+                            <FileDown className="h-4 w-4" />
+                        </Button>
+
                         {onPreviewOpen && (
                             <Button
                                 variant="ghost"
@@ -378,7 +411,7 @@ export default function ResumePreviewSection({
                 </ScrollArea>
             </div>
 
-            <PrintableResume ref={printRef} resumeData={resumeData} />
+            <PrintableResume ref={printRef} resumeData={resumeData} userTier={userTier} />
         </div>
     );
 }

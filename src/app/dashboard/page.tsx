@@ -1,7 +1,7 @@
 import { getDb } from "@/db";
 import { resumes } from "@/db/schema";
 import { requireSession } from "@/lib/auth-server";
-import { canCreateResume, PLAN_LIMITS } from "@/lib/subscription";
+import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import { eq, desc } from "drizzle-orm";
 import { Plus, FileText, Sparkles, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ export default async function DashboardPage() {
     limit,
   } = await canCreateResume(session.user.id);
   const atLimit = !canCreate;
+  const userTier = await getUserTier(session.user.id);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -139,7 +140,7 @@ export default async function DashboardPage() {
           )}
 
           {userResumes.map((resume) => (
-            <ResumeCard key={resume.id} resume={resume} />
+            <ResumeCard key={resume.id} resume={resume} userTier={userTier} />
           ))}
         </div>
       ) : (
@@ -166,7 +167,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Templates Section — Client Component for modal state */}
-      <TemplatesSection />
+      <TemplatesSection userTier={userTier} />
     </div>
   );
 }

@@ -9,6 +9,8 @@ export const users = sqliteTable("users", {
     .default(false)
     .notNull(),
   image: text("image"),
+  referralCode: text("referral_code").unique(),
+  referredBy: text("referred_by"),
   createdAt: integer("created_at", { mode: "timestamp_ms" })
     .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
     .notNull(),

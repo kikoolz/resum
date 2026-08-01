@@ -9,7 +9,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Lock } from "lucide-react";
 import ResumeTemplate from "./editor/[resumeId]/ResumeTemplate";
 import {
     PAGE_WIDTH,
@@ -19,6 +19,7 @@ import {
 } from "./editor/[resumeId]/previewConfig";
 import type { SampleTemplate } from "./sample-templates";
 import { createResumeFromTemplate } from "./actions";
+import { PLAN_LIMITS, type PlanTier } from "@/lib/subscription";
 
 const A4_RATIO = 297 / 210;
 
@@ -26,12 +27,14 @@ interface TemplatePreviewModalProps {
     template: SampleTemplate | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    userTier?: PlanTier;
 }
 
 export function TemplatePreviewModal({
     template,
     open,
     onOpenChange,
+    userTier,
 }: TemplatePreviewModalProps) {
     const [isCreating, setIsCreating] = useState(false);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -53,6 +56,9 @@ export function TemplatePreviewModal({
     }, [open]);
 
     if (!template) return null;
+
+    const allowedTemplates = userTier ? PLAN_LIMITS[userTier].templates : PLAN_LIMITS.free.templates;
+    const isLocked = !allowedTemplates.includes(template.data.templateName as typeof allowedTemplates[number]);
 
     const fontFamilyCss = getPreviewFontFamilyCss(template.data.fontFamily);
     const fontScale = (template.data.fontSize ?? 10) / 10;
@@ -140,7 +146,7 @@ export function TemplatePreviewModal({
                 <div className="flex-none bg-background px-8 py-6">
                     <div className="flex items-center justify-between gap-4">
                         <p className="hidden text-xs uppercase tracking-[0.15em] text-muted-foreground sm:block">
-                            Use as a starting point
+                            {isLocked ? "Upgrade to use this template" : "Use as a starting point"}
                         </p>
                         <div className="flex w-full gap-3 sm:w-auto">
                             <Button
@@ -150,23 +156,36 @@ export function TemplatePreviewModal({
                             >
                                 Close
                             </Button>
-                            <Button
-                                className="group flex-1 rounded-none bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
-                                disabled={isCreating}
-                                onClick={handleCreateYours}
-                            >
-                                {isCreating ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Creating...
-                                    </>
-                                ) : (
-                                    <>
-                                        Use This Template
-                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                                    </>
-                                )}
-                            </Button>
+                            {isLocked ? (
+                                <Button
+                                    className="group flex-1 rounded-none bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
+                                    onClick={() => {
+                                        onOpenChange(false);
+                                        window.location.href = "/dashboard/billing";
+                                    }}
+                                >
+                                    <Lock className="mr-2 h-4 w-4" />
+                                    Upgrade to Pro
+                                </Button>
+                            ) : (
+                                <Button
+                                    className="group flex-1 rounded-none bg-foreground px-6 font-bold text-background hover:bg-foreground/90 sm:flex-none cursor-pointer"
+                                    disabled={isCreating}
+                                    onClick={handleCreateYours}
+                                >
+                                    {isCreating ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Creating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            Use This Template
+                                            <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                                        </>
+                                    )}
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </div>

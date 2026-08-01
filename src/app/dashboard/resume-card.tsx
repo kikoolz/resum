@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Edit, MoreVertical, Printer, Sparkles, Trash2 } from "lucide-react";
+import { Edit, FileDown, MoreVertical, Printer, Sparkles, Trash2 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,9 +40,10 @@ import PortfolioModal from "./editor/[resumeId]/PortfolioModal";
 
 interface ResumeCardProps {
   resume: ResumeServerData;
+  userTier?: "free" | "pro" | "lifetime";
 }
 
-export function ResumeCard({ resume }: ResumeCardProps) {
+export function ResumeCard({ resume, userTier }: ResumeCardProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -93,6 +94,26 @@ export function ResumeCard({ resume }: ResumeCardProps) {
       );
     },
   });
+
+  async function handleDocxDownload() {
+    try {
+      const res = await fetch("/api/export-docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeId: resume.id }),
+      });
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${(resumeValues.firstName || "resume").replace(/\s+/g, "_")}_${(resumeValues.lastName || "").replace(/\s+/g, "_")}_resume.docx`.replace(/^_/, "");
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("DOCX export error:", err);
+    }
+  }
 
   const editorHref = `/dashboard/editor/${resume.id}`;
 
@@ -180,6 +201,10 @@ export function ResumeCard({ resume }: ResumeCardProps) {
                 <Printer className="mr-2 h-4 w-4" />
                 Print / Save PDF
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDocxDownload}>
+                <FileDown className="mr-2 h-4 w-4" />
+                Download DOCX
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPortfolioOpen(true)}>
                 <Sparkles className="mr-2 h-4 w-4" />
                 Generate Portfolio
@@ -196,7 +221,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
         </div>
       </div>
 
-      {mounted && <PrintableResume ref={printRef} resumeData={resumeValues} />}
+      {mounted && <PrintableResume ref={printRef} resumeData={resumeValues} userTier={userTier} />}
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>

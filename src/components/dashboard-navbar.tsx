@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   Menu,
   Mail,
+  Gift,
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,12 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
       label: "Uploads",
       icon: FileUp,
       active: pathname === "/dashboard/uploads",
+    },
+    {
+      href: "/dashboard/referrals",
+      label: "Referrals",
+      icon: Gift,
+      active: pathname === "/dashboard/referrals",
     },
     {
       href: "/dashboard/billing",
