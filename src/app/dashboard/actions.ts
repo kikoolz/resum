@@ -27,21 +27,12 @@ import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { getAiModel, MODEL_ID } from "@/lib/ai";
 import { logAiUsage, checkAiUsageLimit } from "@/lib/ai-usage";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
-import { recordReferral } from "@/lib/referrals";
 import {
     aiResumeExtractionSchema,
     aiResumeAnalysisSchema,
     type AiResumeExtraction,
     type AiResumeAnalysis,
 } from "@/lib/ai-schemas";
-
-// ---------------------------------------------------------------------------
-// Record a referral (called from client after signup with ?ref=CODE)
-// ---------------------------------------------------------------------------
-export async function recordReferralAction(referralCode: string): Promise<void> {
-    const session = await requireSession();
-    await recordReferral(referralCode, session.user.id);
-}
 
 // ---------------------------------------------------------------------------
 // Create a new resume and redirect to the editor
