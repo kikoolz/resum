@@ -1762,3 +1762,12 @@ export async function deleteCoverLetter(coverLetterId: string) {
 
     revalidatePath("/dashboard/cover-letters");
 }
+
+// ---------------------------------------------------------------------------
+// Referral tracking
+// ---------------------------------------------------------------------------
+export async function recordReferralAction(referralCode: string): Promise<boolean> {
+    const session = await requireSession();
+    const { recordReferral } = await import("@/lib/referrals");
+    return recordReferral(referralCode, session.user.id);
+}

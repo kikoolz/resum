@@ -1,5 +1,6 @@
 import { requireSession } from "@/lib/auth-server";
 import { DashboardNavbar } from "@/components/dashboard-navbar";
+import { ReferralTracker } from "./ReferralTracker";
 
 export const dynamic = "force-dynamic";
 
@@ -13,6 +14,7 @@ export default async function DashboardLayout({
     return (
         <div className="flex min-h-screen flex-col bg-background">
             <DashboardNavbar user={session.user} />
+            <ReferralTracker />
             <main className="flex flex-1 flex-col">{children}</main>
         </div>
     );
