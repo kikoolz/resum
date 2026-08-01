@@ -12,7 +12,8 @@ import {
   getPreviewFontFamilyCss,
 } from "./editor/[resumeId]/previewConfig";
 import { ArrowRight, Lock } from "lucide-react";
-import { PLAN_LIMITS, type PlanTier } from "@/lib/subscription";
+import { PLAN_LIMITS } from "@/lib/subscription";
+import type { PlanTier } from "@/lib/stripe";
 
 export default function TemplatesSection({ userTier }: { userTier?: PlanTier }) {
   const [selectedTemplate, setSelectedTemplate] =
@@ -48,7 +49,7 @@ export default function TemplatesSection({ userTier }: { userTier?: PlanTier }) 
             key={template.name}
             template={template}
             index={index + 1}
-            isLocked={!allowedTemplates.includes(template.data.templateName as typeof allowedTemplates[number])}
+            isLocked={!(allowedTemplates as readonly string[]).includes(template.data.templateName as string)}
             onClick={() => handleTemplateClick(template.name)}
           />
         ))}

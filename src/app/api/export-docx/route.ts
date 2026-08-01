@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth-server";
 import { getDb } from "@/db";
-import { resumes, workExperiences, educations, projects, awards, publications, certificates, languages, courses, resumeReferences, interests } from "@/db/schema";
+import { resumes } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { generateDocx } from "@/lib/docx-export";
-import type { ResumeValues, WorkExperienceValues, EducationValues, ProjectValues, AwardValues, PublicationValues, CertificateValues, LanguageValues, CourseValues, ReferenceValues, InterestValues } from "@/lib/validation";
+import type { ResumeValues } from "@/lib/validation";
 
 export async function POST(request: Request) {
     try {
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
             fieldVisibility: (resume.fieldVisibility as Record<string, boolean> | null) ?? undefined,
             workExperiences: resume.workExperiences
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((w): WorkExperienceValues => ({
+                .map((w) => ({
                     id: w.id,
                     position: w.position ?? undefined,
                     company: w.company ?? undefined,
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
                 })),
             educations: resume.educations
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((e): EducationValues => ({
+                .map((e) => ({
                     id: e.id,
                     degree: e.degree ?? undefined,
                     school: e.school ?? undefined,
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
                 })),
             projects: resume.projects
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((p): ProjectValues => ({
+                .map((p) => ({
                     id: p.id,
                     title: p.title ?? undefined,
                     subtitle: p.subtitle ?? undefined,
@@ -103,7 +103,7 @@ export async function POST(request: Request) {
                 })),
             awards: resume.awards
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((a): AwardValues => ({
+                .map((a) => ({
                     id: a.id,
                     title: a.title ?? undefined,
                     issuer: a.issuer ?? undefined,
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
                 })),
             publications: resume.publications
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((p): PublicationValues => ({
+                .map((p) => ({
                     id: p.id,
                     title: p.title ?? undefined,
                     publisher: p.publisher ?? undefined,
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
                 })),
             certificates: resume.certificates
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((c): CertificateValues => ({
+                .map((c) => ({
                     id: c.id,
                     title: c.title ?? undefined,
                     issuer: c.issuer ?? undefined,
@@ -140,7 +140,7 @@ export async function POST(request: Request) {
                 })),
             languages: resume.languages
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((l): LanguageValues => ({
+                .map((l) => ({
                     id: l.id,
                     language: l.language ?? undefined,
                     proficiency: l.proficiency ?? undefined,
@@ -149,7 +149,7 @@ export async function POST(request: Request) {
                 })),
             courses: resume.courses
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((c): CourseValues => ({
+                .map((c) => ({
                     id: c.id,
                     name: c.name ?? undefined,
                     institution: c.institution ?? undefined,
@@ -160,7 +160,7 @@ export async function POST(request: Request) {
                 })),
             references: resume.resumeReferences
                 .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
-                .map((r): ReferenceValues => ({
+                .map((r) => ({
                     id: r.id,
                     name: r.name ?? undefined,
                     position: r.position ?? undefined,
@@ -170,18 +170,18 @@ export async function POST(request: Request) {
                     visible: r.visible ?? undefined,
                     displayOrder: r.displayOrder ?? undefined,
                 })),
-            interests: resume.interests.map((i): InterestValues => ({
+            interests: resume.interests.map((i) => ({
                 id: i.id,
                 name: i.name ?? undefined,
                 visible: i.visible ?? undefined,
             })),
         };
 
-        const buffer = await generateDocx(resumeData);
+        const docxBytes = await generateDocx(resumeData);
 
         const fileName = `${(resumeData.firstName || "resume").replace(/\s+/g, "_")}_${(resumeData.lastName || "").replace(/\s+/g, "_")}_resume.docx`.replace(/^_/, "");
 
-        return new NextResponse(buffer, {
+        return new NextResponse(new Uint8Array(docxBytes), {
             headers: {
                 "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "Content-Disposition": `attachment; filename="${fileName}"`,

@@ -82,8 +82,8 @@ export async function createResumeFromTemplate(
     // Enforce template access
     const userTier = await getUserTier(session.user.id);
     const allowedTemplates = PLAN_LIMITS[userTier].templates;
-    const requestedTemplate = templateData.templateName || "professional";
-    if (!allowedTemplates.includes(requestedTemplate as typeof allowedTemplates[number])) {
+    const requestedTemplate = (templateData.templateName || "professional") as string;
+    if (!(allowedTemplates as readonly string[]).includes(requestedTemplate)) {
         redirect("/dashboard/billing");
     }
 

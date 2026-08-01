@@ -19,7 +19,8 @@ import {
 } from "./editor/[resumeId]/previewConfig";
 import type { SampleTemplate } from "./sample-templates";
 import { createResumeFromTemplate } from "./actions";
-import { PLAN_LIMITS, type PlanTier } from "@/lib/subscription";
+import { PLAN_LIMITS } from "@/lib/subscription";
+import type { PlanTier } from "@/lib/stripe";
 
 const A4_RATIO = 297 / 210;
 
@@ -58,7 +59,7 @@ export function TemplatePreviewModal({
     if (!template) return null;
 
     const allowedTemplates = userTier ? PLAN_LIMITS[userTier].templates : PLAN_LIMITS.free.templates;
-    const isLocked = !allowedTemplates.includes(template.data.templateName as typeof allowedTemplates[number]);
+    const isLocked = !(allowedTemplates as readonly string[]).includes(template.data.templateName as string);
 
     const fontFamilyCss = getPreviewFontFamilyCss(template.data.fontFamily);
     const fontScale = (template.data.fontSize ?? 10) / 10;

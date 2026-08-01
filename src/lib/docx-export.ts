@@ -679,6 +679,5 @@ export async function generateDocx(data: ResumeValues): Promise<Buffer> {
         ],
     });
 
-    const buffer = await Packer.toBuffer(doc);
-    return Buffer.from(buffer);
+    return await Packer.toBuffer(doc);
 }

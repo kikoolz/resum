@@ -1,7 +1,7 @@
 "use client";
 
+import { Suspense, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import { signIn, signUp } from "@/lib/auth-client";
 import { Loader2, ArrowRight, Mail } from "lucide-react";
 import { motion } from "framer-motion";
@@ -10,6 +10,14 @@ import { useSearchParams } from "next/navigation";
 import { DoodleBackground } from "../doodle-background";
 
 export default function SignUp() {
+  return (
+    <Suspense>
+      <SignUpInner />
+    </Suspense>
+  );
+}
+
+function SignUpInner() {
   const searchParams = useSearchParams();
   const referralCode = searchParams.get("ref");
 
