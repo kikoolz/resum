@@ -278,23 +278,23 @@ export const sampleTemplates: SampleTemplate[] = [
       ],
       workExperiences: [
         {
-          position: "Warehouse Associate",
-          company: "Global Logistics Solutions",
+          position: "Full-Stack Web Developer",
+          company: "Pixelwave Studios",
           startDate: "2024-09-01",
-          endDate: "2024-12-01",
-          location: "Modena, Italy",
+          endDate: "2025-06-01",
+          location: "Bologna, Italy",
           description:
-            "• Order Picking: Accurately and efficiently retrieved items from shelving systems to meet daily fulfillment targets.\n• Indirect Logistics: Handled support tasks including stock replenishment, workstation organization, and maintaining a clean warehouse environment.\n• Inventory Management: Utilized RFID devices and scanners for real-time tracking of warehouse inventory movements.\n• Safety and Quality: Consistently adhered to company safety regulations and quality assurance protocols.",
+            "• Built and deployed a full-stack e-commerce platform using React, Node.js, and PostgreSQL, handling 500+ daily active users.\n• Developed RESTful APIs and integrated Stripe payment processing, reducing checkout abandonment by 20%.\n• Implemented real-time inventory management with WebSockets, ensuring sync across admin dashboard and storefront.\n• Collaborated with a 4-person team using Git, CI/CD pipelines, and agile sprints to deliver features on a bi-weekly cadence.",
           visible: true,
         },
         {
-          position: "Kitchen Assistant & Dishwasher",
-          company: "Trattoria del Sole",
+          position: "Junior Full-Stack Developer",
+          company: "NovaTech Solutions",
           startDate: "2024-03-01",
           endDate: "2024-08-01",
-          location: "Bologna, Italy",
+          location: "Remote",
           description:
-            "• Washed and sanitized dishes, glassware, and kitchen equipment.\n• Assisted chefs with preliminary food preparation tasks.\n• Maintained cleanliness and order in the kitchen and work areas.\n• Followed all hygiene and safety standards.",
+            "• Developed responsive web applications using TypeScript, React, and Express.js for internal tooling.\n• Migrated a legacy jQuery codebase to React, improving page load performance by 35% and maintainability.\n• Designed and optimized MongoDB schemas, reducing average query time by 40%.\n• Wrote unit and integration tests with Jest, increasing code coverage from 45% to 82%.",
           visible: true,
         },
       ],
