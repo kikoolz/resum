@@ -284,7 +284,7 @@ export const sampleTemplates: SampleTemplate[] = [
           endDate: "2025-06-01",
           location: "Bologna, Italy",
           description:
-            "• Built and deployed a full-stack e-commerce platform using React, Node.js, and PostgreSQL, handling 500+ daily active users.\n• Developed RESTful APIs and integrated Stripe payment processing, reducing checkout abandonment by 20%.\n• Implemented real-time inventory management with WebSockets, ensuring sync across admin dashboard and storefront.\n• Collaborated with a 4-person team using Git, CI/CD pipelines, and agile sprints to deliver features on a bi-weekly cadence.",
+            "• Built and deployed a full-stack e-commerce platform using React, Node.js, and PostgreSQL, handling 500+ daily active users.\n• Developed RESTful APIs and integrated Stripe payment processing, reducing checkout abandonment by 20%.",
           visible: true,
         },
         {
@@ -294,7 +294,7 @@ export const sampleTemplates: SampleTemplate[] = [
           endDate: "2024-08-01",
           location: "Remote",
           description:
-            "• Developed responsive web applications using TypeScript, React, and Express.js for internal tooling.\n• Migrated a legacy jQuery codebase to React, improving page load performance by 35% and maintainability.\n• Designed and optimized MongoDB schemas, reducing average query time by 40%.\n• Wrote unit and integration tests with Jest, increasing code coverage from 45% to 82%.",
+            "• Developed responsive web applications using TypeScript, React, and Express.js for internal tooling.\n• Migrated a legacy jQuery codebase to React, improving page load performance by 35% and maintainability.",
           visible: true,
         },
       ],
@@ -324,7 +324,7 @@ export const sampleTemplates: SampleTemplate[] = [
           subtitle:
             "A full-stack application for discovering and rating cinematic content.",
           description:
-            "• Developed a responsive web application with React and TypeScript for advanced movie searching, integrated with the CinemaData API.\n• Implemented a real-time search system with multiple dynamic filters (genre, rating, release year) for seamless navigation.\n• Optimized performance through efficient API calls with client-side caching and intelligent request handling using Axios.\n• Designed a modern user interface with Tailwind CSS, ensuring a consistent and accessible cross-device experience.",
+            "• Developed a responsive web application with React and TypeScript for advanced movie searching, integrated with the CinemaData API.\n• Implemented a real-time search system with multiple dynamic filters (genre, rating, release year) for seamless navigation.",
           visible: true,
         },
         {
@@ -332,7 +332,7 @@ export const sampleTemplates: SampleTemplate[] = [
           subtitle:
             "A full-stack app enabling real-time messaging between registered users.",
           description:
-            "• Engineered a bidirectional real-time messaging system using Socket.IO for instant communication.\n• Implemented secure authentication and session management with a Node.js backend and a MongoDB database.\n• Integrated global state management with Zustand for efficient synchronization between the UI and real-time data.\n• Developed a responsive and accessible user interface with DaisyUI, enhancing overall usability and user experience.",
+            "• Engineered a bidirectional real-time messaging system using Socket.IO for instant communication.\n• Implemented secure authentication and session management with a Node.js backend and a MongoDB database.",
           visible: true,
         },
       ],
