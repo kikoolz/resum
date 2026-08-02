@@ -13,7 +13,7 @@ import {
     Calendar,
     Star,
     Zap,
-    Sparkles,
+    Snowflake,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -220,7 +220,7 @@ export default async function ProfilePage() {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-primary" />
+                            <Snowflake className="h-5 w-5 text-primary" />
                             <CardTitle>AI Usage</CardTitle>
                         </div>
                         <Badge variant={aiUsage.usagePercent >= 90 ? "destructive" : aiUsage.usagePercent >= 70 ? "secondary" : "outline"}>

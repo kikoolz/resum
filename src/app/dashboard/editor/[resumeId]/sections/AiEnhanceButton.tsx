@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, Loader2, Check } from "lucide-react";
+import { Snowflake, Loader2, Check } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -82,7 +82,7 @@ export default function AiEnhanceButton({
                         ) : success ? (
                             <Check className="size-3" />
                         ) : (
-                            <Sparkles className="size-3" />
+                            <Snowflake className="size-3" />
                         )}
                         <span>AI</span>
                     </button>

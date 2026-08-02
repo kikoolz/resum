@@ -13,7 +13,7 @@ import {
     Loader2,
     ExternalLink,
     RefreshCw,
-    Sparkles,
+    Snowflake,
     AlertCircle,
 } from "lucide-react";
 import { generatePortfolioFromResume } from "../../actions";
@@ -106,7 +106,7 @@ export default function PortfolioModal({
                 <DialogHeader className="flex-shrink-0 border-b border-border/40 px-5 py-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-primary" />
+                            <Snowflake className="h-4 w-4 text-primary" />
                             <DialogTitle className="text-sm font-semibold">
                                 AI Portfolio
                                 {resumeTitle && (
@@ -178,7 +178,7 @@ export default function PortfolioModal({
                                 <div className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
                                 <div className="absolute inset-2 animate-pulse rounded-full bg-primary/30" />
                                 <div className="absolute inset-4 flex items-center justify-center rounded-full bg-primary/50">
-                                    <Sparkles className="h-5 w-5 text-white" />
+                                    <Snowflake className="h-5 w-5 text-white" />
                                 </div>
                             </div>
                             <div>

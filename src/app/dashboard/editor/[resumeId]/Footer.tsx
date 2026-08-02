@@ -14,7 +14,7 @@ import {
     Check,
     AlertCircle,
     Circle,
-    Sparkles,
+    Snowflake,
 } from "lucide-react";
 
 interface FooterProps {

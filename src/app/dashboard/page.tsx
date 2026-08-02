@@ -3,7 +3,7 @@ import { resumes } from "@/db/schema";
 import { requireSession } from "@/lib/auth-server";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import { eq, desc } from "drizzle-orm";
-import { Plus, FileText, Sparkles, Lock } from "lucide-react";
+import { Plus, FileText, Snowflake, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -158,7 +158,7 @@ export default async function DashboardPage() {
           <CardContent className="flex justify-center pb-8">
             <form action={createResume}>
               <Button type="submit" size="lg">
-                <Sparkles className="mr-1.5 h-4 w-4" />
+                <Snowflake className="mr-1.5 h-4 w-4" />
                 Create Your First Resume
               </Button>
             </form>

@@ -21,7 +21,7 @@ import {
     ChevronUp,
     Shield,
     RefreshCw,
-    Sparkles,
+    Snowflake,
     TrendingUp,
     Target,
     Zap,

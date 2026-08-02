@@ -11,7 +11,7 @@ import {
   Infinity,
   Loader2,
   ExternalLink,
-  Sparkles,
+  Snowflake,
   Check,
 } from "lucide-react";
 
@@ -350,7 +350,7 @@ export default function BillingPageClient({
                   {loading === plan.id ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Sparkles className="mr-2 h-4 w-4" />
+                    <Snowflake className="mr-2 h-4 w-4" />
                   )}
                   {plan.cta}
                 </Button>

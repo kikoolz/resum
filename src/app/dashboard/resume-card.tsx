@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Edit, FileDown, MoreVertical, Printer, Sparkles, Trash2 } from "lucide-react";
+import { Edit, FileDown, MoreVertical, Printer, Snowflake, Trash2 } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import { Button } from "@/components/ui/button";
 import {
@@ -206,7 +206,7 @@ export function ResumeCard({ resume, userTier }: ResumeCardProps) {
                 Download DOCX
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setPortfolioOpen(true)}>
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Snowflake className="mr-2 h-4 w-4" />
                 Generate Portfolio
               </DropdownMenuItem>
               <DropdownMenuItem
