@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Privacy Policy | Resum",
     description:
       "Privacy Policy for Resum. Learn how we collect, use, and protect your personal information and resume data.",
-    url: "https://resum-mu.vercel.app/privacy",
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://resum-mu.vercel.app"}/privacy`,
   },
 };
 

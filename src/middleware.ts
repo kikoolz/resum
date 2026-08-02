@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const publicRoutes = ["/", "/sign-in", "/sign-up", "/simple", "/terms", "/privacy"];
+const publicRoutes = ["/", "/sign-in", "/sign-up", "/simple", "/terms", "/privacy", "/forgot-password", "/reset-password"];
 const publicPrefixes = ["/api/auth/", "/api/webhooks/", "/api/portfolio/"];
 
 export function middleware(request: NextRequest) {

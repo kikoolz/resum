@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "Resum — AI-Powered Resume Builder",
     description:
       "Resum helps you build ATS-friendly, recruiter-ready resumes in minutes with AI. Upload an existing resume or start fresh.",
-    url: "https://resum-mu.vercel.app",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://resum-mu.vercel.app",
     siteName: "Resum",
     locale: "en_US",
     type: "website",

@@ -217,6 +217,11 @@ export default function SignIn() {
                       required
                       className="w-full h-11 px-3 rounded-md border border-foreground/10 bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 transition-all"
                     />
+                    <div className="flex justify-end">
+                      <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        Forgot password?
+                      </Link>
+                    </div>
                   </div>
 
                   {error && (

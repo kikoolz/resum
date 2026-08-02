@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Terms of Service | Resum",
     description:
       "Terms of Service for Resum. Read our terms and conditions for using our AI-powered resume building platform.",
-    url: "https://resum-mu.vercel.app/terms",
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://resum-mu.vercel.app"}/terms`,
   },
 };
 

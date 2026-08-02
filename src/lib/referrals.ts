@@ -138,10 +138,27 @@ export async function grantReferralReward(referredUserId: string): Promise<void>
 
     if (!referral || referral.rewardGranted) return;
 
+    // Find the referrer's subscription and extend by 1 month
+    const { userSubscriptions } = await import("@/db/schema");
+    const referrerSub = await db.query.userSubscriptions.findFirst({
+        where: eq(userSubscriptions.userId, referral.referrerUserId),
+    });
+
+    if (referrerSub) {
+        const currentEnd = new Date(referrerSub.stripeCurrentPeriodEnd);
+        // Add 30 days to the current period end
+        const newEnd = new Date(currentEnd.getTime() + 30 * 24 * 60 * 60 * 1000);
+        await db
+            .update(userSubscriptions)
+            .set({ stripeCurrentPeriodEnd: newEnd })
+            .where(eq(userSubscriptions.userId, referral.referrerUserId));
+    }
+
     await db
         .update(referrals)
         .set({ rewardGranted: true })
         .where(eq(referrals.id, referral.id));
 
     revalidatePath("/dashboard/referrals");
+    revalidatePath("/dashboard/billing");
 }
