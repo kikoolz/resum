@@ -121,7 +121,7 @@ function SignUpInner() {
                 className="space-y-4"
               >
                 {[
-                  { number: "01", text: "3 free resumes" },
+                  { number: "01", text: "1 free resume" },
                   { number: "02", text: "50,000 AI tokens per month" },
                   { number: "03", text: "PDF export included" },
                 ].map((item) => (

@@ -9,7 +9,7 @@ import { getPlanFromPriceId, isLifetimePriceId, type PlanTier } from "@/lib/stri
 
 export const PLAN_LIMITS = {
   free: {
-    resumes: 3,
+    resumes: 1,
     coverLetters: 0,
     aiTokensMonthly: 50_000,
     aiRecreateMonthly: 1,
