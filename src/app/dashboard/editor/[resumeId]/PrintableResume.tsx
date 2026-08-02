@@ -170,57 +170,53 @@ const PrintableResume = forwardRef<HTMLDivElement, PrintableResumeProps>(
                                 <div
                                     style={{
                                         position: "absolute",
-                                        inset: 0,
+                                        bottom: "12px",
+                                        left: "12px",
                                         display: "flex",
                                         alignItems: "center",
-                                        justifyContent: "center",
-                                        overflow: "hidden",
+                                        gap: "6px",
                                         pointerEvents: "none",
+                                        userSelect: "none",
                                     }}
                                 >
-                                    <div
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="rgba(0,0,0,0.15)"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M 10 9 L 8 9" />
+                                        <path d="M 14 2 L 14 7" />
+                                        <path d="M 14 7 A1 1 0 0 0 15 8" />
+                                        <path d="M 15 8 L 20 8" />
+                                        <path d="M 16 13 L 8 13" />
+                                        <path d="M 16 17 L 8 17" />
+                                        <path d="M 6 22 A2 2 0 0 1 4 20" />
+                                        <path d="M 4 20 L 4 4" />
+                                        <path d="M 4 4 A2 2 0 0 1 6 2" />
+                                        <path d="M 6 2 L 14 2" />
+                                        <path d="M 14 2 A2.4 2.4 0 0 1 15.704 2.706" />
+                                        <path d="M 15.704 2.706 L 19.292 6.294" />
+                                        <path d="M 19.292 6.294 A2.4 2.4 0 0 1 20 8" />
+                                        <path d="M 20 8 L 20 20" />
+                                        <path d="M 20 20 A2 2 0 0 1 18 22" />
+                                        <path d="M 18 22 L 6 22" />
+                                    </svg>
+                                    <span
                                         style={{
-                                            transform: "rotate(-45deg)",
-                                            fontSize: "64px",
+                                            fontSize: "9px",
                                             fontWeight: 700,
-                                            color: "rgba(0,0,0,0.04)",
-                                            whiteSpace: "nowrap",
-                                            userSelect: "none",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "16px",
+                                            color: "rgba(0,0,0,0.15)",
+                                            letterSpacing: "0.02em",
                                         }}
                                     >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="56"
-                                            height="56"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <path d="M 10 9 L 8 9" />
-                                            <path d="M 14 2 L 14 7" />
-                                            <path d="M 14 7 A1 1 0 0 0 15 8" />
-                                            <path d="M 15 8 L 20 8" />
-                                            <path d="M 16 13 L 8 13" />
-                                            <path d="M 16 17 L 8 17" />
-                                            <path d="M 6 22 A2 2 0 0 1 4 20" />
-                                            <path d="M 4 20 L 4 4" />
-                                            <path d="M 4 4 A2 2 0 0 1 6 2" />
-                                            <path d="M 6 2 L 14 2" />
-                                            <path d="M 14 2 A2.4 2.4 0 0 1 15.704 2.706" />
-                                            <path d="M 15.704 2.706 L 19.292 6.294" />
-                                            <path d="M 19.292 6.294 A2.4 2.4 0 0 1 20 8" />
-                                            <path d="M 20 8 L 20 20" />
-                                            <path d="M 20 20 A2 2 0 0 1 18 22" />
-                                            <path d="M 18 22 L 6 22" />
-                                        </svg>
                                         Made with Resum
-                                    </div>
+                                    </span>
                                 </div>
                             )}
                         </div>
