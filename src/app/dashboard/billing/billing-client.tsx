@@ -42,7 +42,7 @@ const PLANS = [
     price: "$0",
     period: "forever",
     features: [
-      "3 resumes",
+      "1 resume",
       "50,000 AI tokens/month",
       "1 AI recreation/month",
       "1 AI analysis/month",
@@ -163,7 +163,9 @@ export default function BillingPageClient({
                 Active Plan
               </p>
               <h2 className="text-2xl font-black tracking-tight">
-                {currentTier === "lifetime" ? "Lifetime Access" : "Pro Subscription"}
+                {currentTier === "lifetime"
+                  ? "Lifetime Access"
+                  : "Pro Subscription"}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {currentTier === "lifetime"
@@ -181,7 +183,9 @@ export default function BillingPageClient({
                 variant={isCanceled ? "destructive" : "default"}
                 className="rounded-none px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest"
               >
-                {currentTier === "lifetime" ? "LIFETIME" : currentTier.toUpperCase()}
+                {currentTier === "lifetime"
+                  ? "LIFETIME"
+                  : currentTier.toUpperCase()}
               </Badge>
               {currentTier !== "lifetime" && (
                 <Button
@@ -213,23 +217,27 @@ export default function BillingPageClient({
           onClick={() => setBilling("monthly")}
           className={cn(
             "text-sm font-medium transition-colors",
-            billing === "monthly" ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground"
+            billing === "monthly"
+              ? "text-foreground"
+              : "text-muted-foreground/50 hover:text-muted-foreground",
           )}
         >
           Monthly
         </button>
         <button
           type="button"
-          onClick={() => setBilling(billing === "monthly" ? "yearly" : "monthly")}
+          onClick={() =>
+            setBilling(billing === "monthly" ? "yearly" : "monthly")
+          }
           className={cn(
             "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200",
-            billing === "yearly" ? "bg-foreground" : "bg-foreground/20"
+            billing === "yearly" ? "bg-foreground" : "bg-foreground/20",
           )}
         >
           <span
             className={cn(
               "pointer-events-none inline-block h-4 w-4 translate-y-0.5 rounded-full bg-background transition-transform duration-200",
-              billing === "yearly" ? "translate-x-[18px]" : "translate-x-0.5"
+              billing === "yearly" ? "translate-x-[18px]" : "translate-x-0.5",
             )}
           />
         </button>
@@ -238,7 +246,9 @@ export default function BillingPageClient({
           onClick={() => setBilling("monthly")}
           className={cn(
             "text-sm font-medium transition-colors",
-            billing === "yearly" ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground"
+            billing === "yearly"
+              ? "text-foreground"
+              : "text-muted-foreground/50 hover:text-muted-foreground",
           )}
         >
           Yearly
@@ -262,7 +272,10 @@ export default function BillingPageClient({
           const isPro = plan.id === "pro";
 
           return (
-            <div key={plan.id} className="flex flex-col border border-foreground/10 p-6">
+            <div
+              key={plan.id}
+              className="flex flex-col border border-foreground/10 p-6"
+            >
               {/* Plan name */}
               <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 {plan.id === "pro" ? "Recommended" : plan.name}
@@ -273,7 +286,9 @@ export default function BillingPageClient({
                 {isPro ? (
                   <>
                     <span className="text-5xl font-black tracking-tighter">
-                      {billing === "yearly" ? plan.yearlyMonthly : plan.monthlyPrice}
+                      {billing === "yearly"
+                        ? plan.yearlyMonthly
+                        : plan.monthlyPrice}
                     </span>
                     <span className="ml-1 text-sm text-muted-foreground">
                       {billing === "yearly" ? "/mo, billed yearly" : "/month"}
@@ -286,25 +301,38 @@ export default function BillingPageClient({
                   </>
                 ) : plan.id === "lifetime" ? (
                   <>
-                    <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
-                    <span className="ml-1 text-sm text-muted-foreground">one-time</span>
+                    <span className="text-5xl font-black tracking-tighter">
+                      {plan.price}
+                    </span>
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      one-time
+                    </span>
                   </>
                 ) : (
                   <>
-                    <span className="text-5xl font-black tracking-tighter">{plan.price}</span>
-                    <span className="ml-1 text-sm text-muted-foreground">/forever</span>
+                    <span className="text-5xl font-black tracking-tighter">
+                      {plan.price}
+                    </span>
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      /forever
+                    </span>
                   </>
                 )}
               </div>
 
-              <p className="mb-6 text-sm text-muted-foreground">{plan.description}</p>
+              <p className="mb-6 text-sm text-muted-foreground">
+                {plan.description}
+              </p>
 
               <div className="mb-6 h-px bg-foreground/10" />
 
               {/* Features */}
               <ul className="mb-8 flex-1 space-y-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-2.5 text-sm leading-relaxed">
+                  <li
+                    key={feature}
+                    className="flex items-start gap-2.5 text-sm leading-relaxed"
+                  >
                     <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/60" />
                     <span>{feature}</span>
                   </li>
@@ -326,7 +354,9 @@ export default function BillingPageClient({
                   variant="default"
                   onClick={() => {
                     const priceId =
-                      billing === "yearly" ? priceIds.pro.yearly : priceIds.pro.monthly;
+                      billing === "yearly"
+                        ? priceIds.pro.yearly
+                        : priceIds.pro.monthly;
                     if (priceId) handleCheckout(priceId, plan.id);
                   }}
                   disabled={loading !== null}
@@ -374,28 +404,35 @@ export default function BillingPageClient({
       <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
         Common Questions
       </p>
-      <h2 className="mb-8 text-2xl font-black tracking-tight">Frequently Asked</h2>
+      <h2 className="mb-8 text-2xl font-black tracking-tight">
+        Frequently Asked
+      </h2>
 
       <div className="grid gap-x-12 gap-y-8 md:grid-cols-2">
         <div>
-          <h3 className="mb-1 text-sm font-semibold">Can I switch plans anytime?</h3>
+          <h3 className="mb-1 text-sm font-semibold">
+            Can I switch plans anytime?
+          </h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
             Yes! You can upgrade or downgrade at any time. Changes take effect
             immediately, and we&apos;ll prorate the difference.
           </p>
         </div>
         <div>
-          <h3 className="mb-1 text-sm font-semibold">What happens when I downgrade?</h3>
+          <h3 className="mb-1 text-sm font-semibold">
+            What happens when I downgrade?
+          </h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            You&apos;ll keep your current plan until the end of the billing period.
-            After that, you&apos;ll be moved to the Free plan with its limits.
+            You&apos;ll keep your current plan until the end of the billing
+            period. After that, you&apos;ll be moved to the Free plan with its
+            limits.
           </p>
         </div>
         <div>
           <h3 className="mb-1 text-sm font-semibold">Do you offer refunds?</h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            We offer a 14-day money-back guarantee. If you&apos;re not satisfied,
-            contact us within 14 days for a full refund.
+            We offer a 14-day money-back guarantee. If you&apos;re not
+            satisfied, contact us within 14 days for a full refund.
           </p>
         </div>
         <div>
@@ -403,8 +440,8 @@ export default function BillingPageClient({
             What&apos;s the difference between Pro and Lifetime?
           </h3>
           <p className="text-sm leading-relaxed text-muted-foreground">
-            Same features! Pro is $10/month (or $96/year). Lifetime is $129
-            once — pay once and never worry about subscriptions again.
+            Same features! Pro is $10/month (or $96/year). Lifetime is $129 once
+            — pay once and never worry about subscriptions again.
           </p>
         </div>
       </div>
