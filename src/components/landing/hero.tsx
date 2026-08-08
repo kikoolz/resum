@@ -16,12 +16,12 @@ export function Hero() {
   const { data: session, isPending } = useSession();
 
   return (
-    <section className="relative pt-24 pb-32 md:pt-32 md:pb-40 overflow-hidden">
+    <section className="relative pt-18 pb-32 md:pt-32 md:pb-40 overflow-hidden">
       {/* Gradient orbs */}
       <div className="absolute top-[10%] right-[5%] w-[300px] h-[300px] bg-primary/15 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-[5%] left-[10%] w-[280px] h-[280px] bg-secondary/15 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-6 -mt-8 md:-mt-12">
         <div className="grid lg:grid-cols-2 gap-4 items-center">
           {/* Left: Text */}
           <div>
@@ -316,7 +316,9 @@ export function Hero() {
             </motion.div>
           </motion.div>
         </div>
+        
       </div>
+
     </section>
   );
 }
