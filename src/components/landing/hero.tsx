@@ -35,7 +35,7 @@ export function Hero() {
                 <Snowflake className="h-4 w-4 text-primary" />
               </div>
               <span className="text-sm font-medium text-muted-foreground tracking-wide uppercase">
-                Resum — AI-Powered Resume Builder
+                AI-Powered Resume Builder
               </span>
             </motion.div>
 
