@@ -12,7 +12,14 @@ export default async function UploadsPage() {
     const db = await getDb();
 
     const files = await db
-        .select()
+        .select({
+            id: userFiles.id,
+            fileName: userFiles.fileName,
+            fileSize: userFiles.fileSize,
+            mimeType: userFiles.mimeType,
+            r2Key: userFiles.r2Key,
+            createdAt: userFiles.createdAt,
+        })
         .from(userFiles)
         .where(eq(userFiles.userId, session.user.id))
         .orderBy(desc(userFiles.createdAt));
