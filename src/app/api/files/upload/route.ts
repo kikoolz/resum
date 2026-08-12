@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
         if (fileType !== "photo") {
             return NextResponse.json(
-                { error: "Only photo uploads supported. Use /api/files/upload for PDFs." },
+                { error: "Only photo uploads supported." },
                 { status: 400 },
             );
         }
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
                 eq(userFiles.userId, userId),
                 eq(userFiles.fileType, "photo"),
             ),
-            columns: { id: true, storageKey: true },
+            columns: { id: true, r2Key: true },
         });
 
         for (const existing of existingPhotos) {
@@ -96,17 +96,15 @@ export async function POST(request: Request) {
         const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
         const storageKey = buildStorageKey(userId, "photo", fileId, ext);
 
-        // Read file as array buffer
         const arrayBuffer = await file.arrayBuffer();
         const base64 = Buffer.from(arrayBuffer).toString("base64");
 
-        // Create DB record
         await db.insert(userFiles).values({
             id: fileId,
             userId,
             resumeId,
             fileType: "photo",
-            storageKey,
+            r2Key: storageKey,
             fileName: file.name,
             fileSize: file.size,
             mimeType: file.type,
@@ -115,7 +113,6 @@ export async function POST(request: Request) {
 
         const url = storageKeyToUrl(storageKey);
 
-        // Sync photo URL to resume
         await db
             .update(resumes)
             .set({ photoUrl: url, updatedAt: new Date() })
@@ -167,25 +164,13 @@ export async function DELETE(request: Request) {
                 eq(userFiles.userId, userId),
                 eq(userFiles.fileType, "photo"),
             ),
-            columns: { id: true, storageKey: true },
+            columns: { id: true },
         });
 
         for (const photo of existingPhotos) {
             try {
                 await db.delete(userFiles).where(eq(userFiles.id, photo.id));
             } catch {}
-        }
-
-        if (existingPhotos.length > 0) {
-            await db
-                .delete(userFiles)
-                .where(
-                    and(
-                        eq(userFiles.resumeId, resumeId),
-                        eq(userFiles.userId, userId),
-                        eq(userFiles.fileType, "photo"),
-                    ),
-                );
         }
 
         await db

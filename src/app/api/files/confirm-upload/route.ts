@@ -1,7 +1,7 @@
 /**
  * Confirm Upload API Route
  *
- * With Turso storage, uploads are server-side so this just creates the DB record.
+ * With Turso storage, uploads are server-side so this just verifies the file exists.
  */
 
 import { NextResponse } from "next/server";
@@ -40,10 +40,9 @@ export async function POST(request: Request) {
             );
         }
 
-        // Verify file exists in Turso
         const db = await getDb();
         const existingFile = await db.query.userFiles.findFirst({
-            where: eq(userFiles.storageKey, storageKey),
+            where: eq(userFiles.r2Key, storageKey),
             columns: { id: true },
         });
 

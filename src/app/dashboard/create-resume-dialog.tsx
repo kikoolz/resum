@@ -11,7 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { createResume } from "./actions";
+import { toast } from "sonner";
+import { recreateResumeFromPdf } from "./actions";
 
 interface CreateResumeDialogProps {
   open: boolean;
@@ -34,6 +35,8 @@ export function CreateResumeDialog({
     setIsLoading(true);
     setLoadingOption("scratch");
     try {
+      // Import createResume dynamically
+      const { createResume } = await import("./actions");
       await createResume();
     } catch (error) {
       console.error("Failed to create resume:", error);
@@ -52,18 +55,65 @@ export function CreateResumeDialog({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.type !== "application/pdf") {
+      toast.error("Please upload a PDF file");
+      return;
+    }
+
     setIsLoading(true);
     setLoadingOption("upload");
+    const toastId = toast.loading("Uploading and extracting resume data...");
 
     try {
-      // Redirect to uploads page where they can process the PDF
-      router.push("/dashboard/uploads");
+      // 1. Upload PDF
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = reader.result as string;
+          resolve(result.split(",")[1] || "");
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const uploadRes = await fetch("/api/files/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          contentType: file.type,
+          fileType: "resume_pdf",
+          fileSize: file.size,
+          fileData: base64,
+        }),
+      });
+
+      const uploadData = await uploadRes.json();
+      if (!uploadRes.ok || !uploadData.success) {
+        throw new Error(uploadData.error || "Failed to upload PDF");
+      }
+
+      toast.loading("AI is extracting resume data...", { id: toastId });
+
+      // 2. Recreate resume from PDF
+      const result = await recreateResumeFromPdf(uploadData.fileId);
+
+      if (result.success && result.resumeId) {
+        toast.success("Resume created! Redirecting...", { id: toastId });
+        onOpenChange(false);
+        router.push(`/dashboard/editor/${result.resumeId}`);
+      } else {
+        toast.error(result.error || "Failed to extract resume data", { id: toastId });
+      }
     } catch (error) {
-      console.error("Failed to handle upload:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to import PDF",
+        { id: toastId },
+      );
     } finally {
       setIsLoading(false);
       setLoadingOption(null);
-      onOpenChange(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -119,9 +169,9 @@ export function CreateResumeDialog({
                 )}
               </div>
               <div className="flex-1">
-                <p className="font-medium">Upload your resume</p>
+                <p className="font-medium">Import from PDF</p>
                 <p className="text-sm text-muted-foreground">
-                  Import an existing PDF and let AI extract the content
+                  Upload an existing resume and let AI extract the content
                 </p>
               </div>
             </button>

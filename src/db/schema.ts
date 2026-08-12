@@ -528,7 +528,7 @@ export const userFiles = sqliteTable("user_files", {
         onDelete: "set null",
     }),
     fileType: text("file_type").notNull(), // "photo" | "resume_pdf"
-    storageKey: text("storage_key").notNull().unique(),
+    r2Key: text("r2_key").notNull().unique(),
     fileName: text("file_name").notNull(),
     fileSize: integer("file_size").notNull(),
     mimeType: text("mime_type").notNull(),

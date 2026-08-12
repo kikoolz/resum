@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { FileText, Trash2, Wand2, BarChart3 } from "lucide-react";
+import { FileText, Trash2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
-import { deleteFile, recreateResumeFromPdf } from "../actions";
+import { deleteFile } from "../actions";
 
 interface FileRowProps {
     file: {
@@ -38,7 +38,6 @@ function formatDate(date: Date | null): string {
 export function FileRow({ file, onAnalyze }: FileRowProps) {
     const router = useRouter();
     const [isDeleting, setIsDeleting] = useState(false);
-    const [isRecreating, setIsRecreating] = useState(false);
 
     async function handleDelete() {
         setIsDeleting(true);
@@ -56,35 +55,6 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
             setIsDeleting(false);
         }
     }
-
-    async function handleRecreate() {
-        setIsRecreating(true);
-        const toastId = toast.loading(
-            "Extracting resume data with AI... This may take 10-15 seconds.",
-        );
-        try {
-            const result = await recreateResumeFromPdf(file.id);
-            if (result.success && result.resumeId) {
-                toast.success("Resume recreated successfully! Redirecting...", {
-                    id: toastId,
-                });
-                router.push(`/dashboard/editor/${result.resumeId}`);
-            } else {
-                toast.error(result.error || "Failed to recreate resume", {
-                    id: toastId,
-                });
-                setIsRecreating(false);
-            }
-        } catch (err) {
-            toast.error(
-                err instanceof Error ? err.message : "Failed to recreate",
-                { id: toastId },
-            );
-            setIsRecreating(false);
-        }
-    }
-
-    const isBusy = isDeleting || isRecreating;
 
     return (
         <div className="group flex flex-col gap-4 border-b border-foreground/10 py-4 last:border-b-0 sm:flex-row sm:items-center sm:gap-6">
@@ -107,24 +77,9 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    onClick={handleRecreate}
-                    disabled={isBusy}
-                    title="Recreate as editable resume"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                >
-                    {isRecreating ? (
-                        <Spinner className="h-4 w-4" />
-                    ) : (
-                        <Wand2 className="h-4 w-4" />
-                    )}
-                </Button>
-
-                <Button
-                    variant="ghost"
-                    size="icon"
                     onClick={() => onAnalyze(file.id, file.fileName)}
-                    disabled={isBusy}
-                    title="AI Analysis"
+                    disabled={isDeleting}
+                    title="AI ATS Analysis"
                     className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                     <BarChart3 className="h-4 w-4" />
@@ -134,11 +89,10 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
                     variant="ghost"
                     size="icon"
                     asChild
-                    disabled={isBusy}
+                    disabled={isDeleting}
                     className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
                 >
                     <a href={file.url} download={file.fileName}>
-                        {/* eslint-disable-next-line jsx-a11y/alt-text */}
                         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </a>
                 </Button>
@@ -147,7 +101,7 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
                     variant="ghost"
                     size="icon"
                     onClick={handleDelete}
-                    disabled={isBusy}
+                    disabled={isDeleting}
                     className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
                 >
                     {isDeleting ? (

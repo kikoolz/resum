@@ -14,16 +14,14 @@ export async function GET(
         const { key } = await params;
         const storageKey = key.map(decodeURIComponent).join("/");
 
-        // Ownership check
         const pathSegments = storageKey.split("/");
         if (pathSegments[0] !== session.user.id) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 
-        // Fetch from Turso
         const db = await getDb();
         const file = await db.query.userFiles.findFirst({
-            where: eq(userFiles.storageKey, storageKey),
+            where: eq(userFiles.r2Key, storageKey),
             columns: { fileData: true, mimeType: true },
         });
 
@@ -31,7 +29,6 @@ export async function GET(
             return new NextResponse("Not found", { status: 404 });
         }
 
-        // Decode base64 to buffer
         const buffer = Buffer.from(file.fileData, "base64");
 
         const headers = new Headers();

@@ -30,18 +30,16 @@ export async function POST(request: Request) {
         const fileId = crypto.randomUUID();
         const storageKey = `${userId}/tiptap/${fileId}.${ext}`;
 
-        // Read file as array buffer and convert to base64
         const arrayBuffer = await file.arrayBuffer();
         const base64 = Buffer.from(arrayBuffer).toString("base64");
 
-        // Store in Turso
         const db = await getDb();
         await db.insert(userFiles).values({
             id: fileId,
             userId,
             resumeId: null,
             fileType: "photo",
-            storageKey,
+            r2Key: storageKey,
             fileName: file.name,
             fileSize: file.size,
             mimeType: file.type,

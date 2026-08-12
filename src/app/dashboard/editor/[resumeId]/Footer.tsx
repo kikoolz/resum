@@ -16,6 +16,7 @@ import {
     Circle,
     Snowflake,
 } from "lucide-react";
+import PdfImportButton from "./PdfImportButton";
 
 interface FooterProps {
     showSmResumePreview: boolean;
@@ -39,7 +40,7 @@ export default function Footer({
     return (
         <footer className="w-full border-t border-border/40 bg-background/80 px-3 py-3 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
             <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-                {/* Left: Mobile preview toggle + Generate Portfolio */}
+                {/* Left: Mobile preview toggle + Import PDF + Generate Portfolio */}
                 <div className="flex items-center gap-2">
                     <TooltipProvider>
                         <Tooltip>
@@ -62,6 +63,9 @@ export default function Footer({
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
+
+                    {/* Import from PDF button */}
+                    {resumeId && <PdfImportButton resumeId={resumeId} />}
 
                     {/* Generate Portfolio button — only show when a resume is saved (has an ID) */}
                     {resumeId && (

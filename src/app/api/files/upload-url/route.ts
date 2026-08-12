@@ -58,18 +58,17 @@ export async function POST(request: Request) {
         const ext = fileName.split(".").pop()?.toLowerCase() || "pdf";
         const storageKey = buildStorageKey(userId, fileType, fileId, ext);
 
-        // Store in Turso
         const db = await getDb();
         await db.insert(userFiles).values({
             id: fileId,
             userId,
             resumeId: null,
             fileType: "resume_pdf",
-            storageKey,
+            r2Key: storageKey,
             fileName,
             fileSize,
             mimeType: "application/pdf",
-            fileData: fileData, // Already base64 encoded
+            fileData: fileData,
         });
 
         const url = `/api/files/${storageKey}`;

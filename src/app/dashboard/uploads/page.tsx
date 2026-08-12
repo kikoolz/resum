@@ -19,7 +19,7 @@ export default async function UploadsPage() {
 
     const filesWithUrls = files.map((file) => ({
         ...file,
-        url: `/api/files/${encodeURIComponent(file.storageKey)}`,
+        url: `/api/files/${encodeURIComponent(file.r2Key)}`,
         createdAt: file.createdAt,
     }));
 
