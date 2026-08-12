@@ -17,7 +17,6 @@ import {
     aiResults,
     coverLetters,
 } from "@/db/schema";
-import { list } from "@vercel/blob";
 import { requireSession } from "@/lib/auth-server";
 import { resumeSchema, coverLetterSchema, type ResumeValues, type CoverLetterValues } from "@/lib/validation";
 import { eq, and } from "drizzle-orm";
@@ -270,27 +269,15 @@ export async function deleteResume(resumeId: string) {
     const session = await requireSession();
     const db = await getDb();
 
-    // Clean up files associated with this resume
-    const files = await db.query.userFiles.findMany({
-        where: and(
-            eq(userFiles.resumeId, resumeId),
-            eq(userFiles.userId, session.user.id),
-        ),
-        columns: { id: true, r2Key: true },
-    });
-
-    if (files.length > 0) {
-        const { del } = await import("@vercel/blob");
-        await Promise.all(files.map((f) => del(f.r2Key).catch(() => {})));
-        await db
-            .delete(userFiles)
-            .where(
-                and(
-                    eq(userFiles.resumeId, resumeId),
-                    eq(userFiles.userId, session.user.id),
-                ),
-            );
-    }
+    // Clean up files associated with this resume (Turso storage)
+    await db
+        .delete(userFiles)
+        .where(
+            and(
+                eq(userFiles.resumeId, resumeId),
+                eq(userFiles.userId, session.user.id),
+            ),
+        );
 
     // ownership check built into the WHERE clause
     await db
@@ -592,8 +579,7 @@ export async function deleteFile(
             return { success: false, error: "File not found" };
         }
 
-        const { del } = await import("@vercel/blob");
-        await del(file.r2Key).catch(() => {});
+        // Delete from Turso storage (data is in the DB)
         await db.delete(userFiles).where(eq(userFiles.id, fileId));
 
         return { success: true };
@@ -609,8 +595,7 @@ export async function deleteFile(
 
 /**
  * Gets the PDF content as a base64 data URL for AI processing.
- * Private blob URLs can't be fetched by external AI providers,
- * so we download the content and encode it.
+ * File data is stored directly in Turso as base64.
  */
 async function getPdfDataForAi(
     userId: string,
@@ -624,24 +609,15 @@ async function getPdfDataForAi(
             eq(userFiles.userId, userId),
             eq(userFiles.fileType, "resume_pdf"),
         ),
+        columns: { fileData: true, fileName: true },
     });
 
-    if (!file) {
+    if (!file || !file.fileData) {
         throw new Error("PDF file not found");
     }
 
-    // Get the blob URL via list, then fetch content
-    const { blobs } = await list({ prefix: file.r2Key, limit: 1 });
-    const blob = blobs.find((b) => b.pathname === file.r2Key);
-    if (!blob) throw new Error("PDF blob not found");
-
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    const response = await fetch(blob.url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUrl = `data:application/pdf;base64,${base64}`;
+    // File data is already stored as base64 in Turso
+    const dataUrl = `data:application/pdf;base64,${file.fileData}`;
     return { dataUrl, fileName: file.fileName };
 }
 

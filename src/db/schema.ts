@@ -517,7 +517,7 @@ export const userSubscriptions = sqliteTable("user_subscriptions", {
 });
 
 // ---------------------------------------------------------------------------
-// User Files (R2)
+// User Files
 // ---------------------------------------------------------------------------
 export const userFiles = sqliteTable("user_files", {
     id: text("id")
@@ -528,10 +528,11 @@ export const userFiles = sqliteTable("user_files", {
         onDelete: "set null",
     }),
     fileType: text("file_type").notNull(), // "photo" | "resume_pdf"
-    r2Key: text("r2_key").notNull().unique(),
+    storageKey: text("storage_key").notNull().unique(),
     fileName: text("file_name").notNull(),
     fileSize: integer("file_size").notNull(),
     mimeType: text("mime_type").notNull(),
+    fileData: text("file_data"), // base64 encoded file content for Turso storage
     createdAt: integer("created_at", { mode: "timestamp" })
         .notNull()
         .default(sql`(unixepoch())`),
