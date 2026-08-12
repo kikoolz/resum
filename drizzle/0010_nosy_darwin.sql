@@ -1,0 +1,1 @@
+ALTER TABLE `user_files` ADD `file_data` text;
