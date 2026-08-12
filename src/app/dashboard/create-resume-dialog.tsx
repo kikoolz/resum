@@ -66,26 +66,12 @@ export function CreateResumeDialog({
 
     try {
       // 1. Upload PDF
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(",")[1] || "");
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const formData = new FormData();
+      formData.append("file", file);
 
       const uploadRes = await fetch("/api/files/upload-url", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: file.name,
-          contentType: file.type,
-          fileType: "resume_pdf",
-          fileSize: file.size,
-          fileData: base64,
-        }),
+        body: formData,
       });
 
       const uploadData = await uploadRes.json();

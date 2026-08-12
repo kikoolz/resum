@@ -1,62 +1,50 @@
 /**
  * PDF Upload API Route
  *
- * Uploads PDF directly to Turso storage.
+ * Accepts FormData with a PDF file field and stores it in Turso.
  */
 
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth-server";
 import { getDb } from "@/db";
 import { userFiles } from "@/db/schema";
-import { buildStorageKey, PDF_MIME_TYPES, MAX_PDF_SIZE } from "@/lib/file-storage";
-
-interface UploadRequestBody {
-    fileName: string;
-    contentType: string;
-    fileType: "resume_pdf";
-    fileSize: number;
-    fileData: string; // base64 encoded
-}
+import { buildStorageKey, MAX_PDF_SIZE } from "@/lib/file-storage";
 
 export async function POST(request: Request) {
     try {
         const session = await requireSession();
         const userId = session.user.id;
 
-        const body = (await request.json()) as UploadRequestBody;
-        const { fileName, contentType, fileType, fileSize, fileData } = body;
+        const formData = await request.formData();
+        const file = formData.get("file") as File | null;
 
-        if (!fileName || !contentType || !fileType || !fileSize || !fileData) {
+        if (!file) {
             return NextResponse.json(
-                { success: false, error: "Missing required fields" },
+                { success: false, error: "No file provided" },
                 { status: 400 },
             );
         }
 
-        if (fileType !== "resume_pdf") {
+        if (file.type !== "application/pdf") {
             return NextResponse.json(
-                { success: false, error: "Only resume_pdf uploads supported" },
+                { success: false, error: "Only PDF files are supported" },
                 { status: 400 },
             );
         }
 
-        if (!PDF_MIME_TYPES.has(contentType)) {
+        if (file.size > MAX_PDF_SIZE) {
             return NextResponse.json(
-                { success: false, error: `Invalid content type: ${contentType}` },
+                { success: false, error: `File too large. Max ${MAX_PDF_SIZE / (1024 * 1024)}MB` },
                 { status: 400 },
             );
         }
 
-        if (typeof fileSize !== "number" || fileSize <= 0 || fileSize > MAX_PDF_SIZE) {
-            return NextResponse.json(
-                { success: false, error: `Invalid file size. Max ${MAX_PDF_SIZE / (1024 * 1024)}MB` },
-                { status: 400 },
-            );
-        }
+        const arrayBuffer = await file.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
 
         const fileId = crypto.randomUUID();
-        const ext = fileName.split(".").pop()?.toLowerCase() || "pdf";
-        const storageKey = buildStorageKey(userId, fileType, fileId, ext);
+        const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
+        const storageKey = buildStorageKey(userId, "resume_pdf", fileId, ext);
 
         const db = await getDb();
         await db.insert(userFiles).values({
@@ -65,10 +53,10 @@ export async function POST(request: Request) {
             resumeId: null,
             fileType: "resume_pdf",
             r2Key: storageKey,
-            fileName,
-            fileSize,
+            fileName: file.name,
+            fileSize: file.size,
             mimeType: "application/pdf",
-            fileData: fileData,
+            fileData: base64,
         });
 
         const url = `/api/files/${storageKey}`;
