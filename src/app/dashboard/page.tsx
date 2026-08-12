@@ -1,13 +1,9 @@
-"use client";
-
-import React from "react";
 import { getDb } from "@/db";
 import { resumes } from "@/db/schema";
 import { requireSession } from "@/lib/auth-server";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import { eq, desc } from "drizzle-orm";
-import { Plus, FileText, Snowflake, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { FileText, Lock } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -17,57 +13,10 @@ import {
 } from "@/components/ui/card";
 import { ResumeCard } from "./resume-card";
 import TemplatesSection from "./templates-section";
-import { CreateResumeDialog } from "./create-resume-dialog";
-
-function CreateResumeButton({ atLimit, size }: { atLimit: boolean; size?: "default" | "lg" }) {
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <>
-      <Button
-        onClick={() => setOpen(true)}
-        disabled={atLimit}
-        className="font-bold rounded-none"
-        size={size}
-      >
-        {atLimit ? (
-          <>
-            <Lock className="mr-1.5 h-4 w-4" />
-            Limit Reached
-          </>
-        ) : (
-          <>
-            <Plus className="mr-1.5 h-4 w-4" />
-            New Resume
-          </>
-        )}
-      </Button>
-      <CreateResumeDialog open={open} onOpenChange={setOpen} atLimit={atLimit} />
-    </>
-  );
-}
-
-function CreateResumeCard() {
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <>
-      <div className="group overflow-hidden rounded-none border-2 border-dashed border-muted-foreground/25 bg-card transition-all hover:border-primary/50 hover:shadow-md">
-        <button
-          onClick={() => setOpen(true)}
-          className="flex w-full flex-col items-center justify-center gap-3 text-muted-foreground transition-colors group-hover:text-primary"
-          style={{ aspectRatio: "210 / 297" }}
-        >
-          <div className="rounded-full border-2 border-dashed border-muted-foreground/30 p-4 transition-colors group-hover:border-primary/50">
-            <Plus className="h-8 w-8" />
-          </div>
-          <span className="text-sm font-medium">Create New Resume</span>
-        </button>
-      </div>
-      <CreateResumeDialog open={open} onOpenChange={setOpen} />
-    </>
-  );
-}
+import {
+  CreateResumeButton,
+  CreateResumeCard,
+} from "./create-resume-buttons";
 
 export default async function DashboardPage() {
   const session = await requireSession();
