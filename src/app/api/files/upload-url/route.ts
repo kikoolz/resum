@@ -2,6 +2,7 @@
  * PDF Upload API Route
  *
  * Accepts FormData with a PDF file field and stores it in Turso.
+ * Self-heals: adds file_data column if missing from the database.
  */
 
 import { NextResponse } from "next/server";
@@ -9,6 +10,18 @@ import { requireSession } from "@/lib/auth-server";
 import { getDb } from "@/db";
 import { userFiles } from "@/db/schema";
 import { buildStorageKey, MAX_PDF_SIZE } from "@/lib/file-storage";
+
+async function ensureFileDataColumn(db: ReturnType<typeof await getDb>) {
+    try {
+        // Try a select that references file_data to check if column exists
+        await db.all({ sql: 'SELECT file_data FROM user_files LIMIT 1' });
+    } catch {
+        // Column doesn't exist — add it
+        console.log("[upload-pdf] file_data column missing, adding it...");
+        await db.all({ sql: 'ALTER TABLE user_files ADD COLUMN file_data TEXT' });
+        console.log("[upload-pdf] file_data column added successfully");
+    }
+}
 
 export async function POST(request: Request) {
     try {
@@ -47,6 +60,8 @@ export async function POST(request: Request) {
         const storageKey = buildStorageKey(userId, "resume_pdf", fileId, ext);
 
         const db = await getDb();
+        await ensureFileDataColumn(db);
+
         await db.insert(userFiles).values({
             id: fileId,
             userId,
