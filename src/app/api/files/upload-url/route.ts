@@ -12,7 +12,7 @@ import { getDb } from "@/db";
 import { userFiles } from "@/db/schema";
 import { buildStorageKey, MAX_PDF_SIZE } from "@/lib/file-storage";
 
-async function ensureFileDataColumn(db: ReturnType<typeof await getDb>) {
+async function ensureFileDataColumn(db: Awaited<ReturnType<typeof getDb>>) {
     try {
         await db.all(sql`SELECT file_data FROM user_files LIMIT 1`);
     } catch {
