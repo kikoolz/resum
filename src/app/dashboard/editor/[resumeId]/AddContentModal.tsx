@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
-import { OPTIONAL_SECTIONS, type SectionMeta } from "./sectionConfig";
+import { ALL_SECTIONS, type SectionMeta } from "./sectionConfig";
 
 interface AddContentModalProps {
     open: boolean;
@@ -30,12 +30,12 @@ export default function AddContentModal({
                 <DialogHeader className="shrink-0 px-6 pt-6 pb-4">
                     <DialogTitle>Add Content</DialogTitle>
                     <DialogDescription>
-                        Choose additional sections to add to your resume.
+                        Choose sections to add to your resume.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="overflow-y-auto px-6 pb-6">
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                        {OPTIONAL_SECTIONS.map((section: SectionMeta) => {
+                        {ALL_SECTIONS.map((section: SectionMeta) => {
                             const isAdded = currentOrder.includes(section.key);
                             const Icon = section.icon;
                             return (
