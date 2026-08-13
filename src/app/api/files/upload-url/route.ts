@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { sql } from "drizzle-orm";
 import { requireSession } from "@/lib/auth-server";
 import { getDb } from "@/db";
 import { userFiles } from "@/db/schema";
@@ -13,12 +14,10 @@ import { buildStorageKey, MAX_PDF_SIZE } from "@/lib/file-storage";
 
 async function ensureFileDataColumn(db: ReturnType<typeof await getDb>) {
     try {
-        // Try a select that references file_data to check if column exists
-        await db.all({ sql: 'SELECT file_data FROM user_files LIMIT 1' });
+        await db.all(sql`SELECT file_data FROM user_files LIMIT 1`);
     } catch {
-        // Column doesn't exist — add it
         console.log("[upload-pdf] file_data column missing, adding it...");
-        await db.all({ sql: 'ALTER TABLE user_files ADD COLUMN file_data TEXT' });
+        await db.run(sql`ALTER TABLE user_files ADD COLUMN file_data TEXT`);
         console.log("[upload-pdf] file_data column added successfully");
     }
 }
