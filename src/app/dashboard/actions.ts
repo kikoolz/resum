@@ -652,41 +652,40 @@ async function saveCachedAiResult(
     });
 }
 
-function buildSectionOrder(_extraction: AiResumeExtraction): string[] {
-    return [
-        "personal-info",
-        "profile",
-        "education",
-        "skills",
-        "experience",
-        "projects",
-        "awards",
-        "publications",
-        "certificates",
-        "languages",
-        "courses",
-        "references",
-        "interests",
-    ];
+function buildSectionOrder(extraction: AiResumeExtraction): string[] {
+    const order: string[] = ["personal-info"];
+    if (extraction.summary) order.push("profile");
+    if (extraction.educations?.length) order.push("education");
+    if (extraction.skills?.length) order.push("skills");
+    if (extraction.workExperiences?.length) order.push("experience");
+    if (extraction.projects?.length) order.push("projects");
+    if (extraction.awards?.length) order.push("awards");
+    if (extraction.publications?.length) order.push("publications");
+    if (extraction.certificates?.length) order.push("certificates");
+    if (extraction.languages?.length) order.push("languages");
+    if (extraction.courses?.length) order.push("courses");
+    if (extraction.references?.length) order.push("references");
+    if (extraction.interests?.length) order.push("interests");
+    return order;
 }
 
 function buildSectionVisibility(
-    _extraction: AiResumeExtraction,
+    extraction: AiResumeExtraction,
 ): Record<string, boolean> {
     return {
         "personal-info": true,
-        profile: true,
-        education: true,
-        skills: true,
-        experience: true,
-        projects: true,
-        awards: true,
-        publications: true,
-        certificates: true,
-        languages: true,
-        courses: true,
-        references: true,
-        interests: true,
+        profile: !!extraction.summary,
+        education: !!extraction.educations?.length,
+        skills: !!extraction.skills?.length,
+        experience: !!extraction.workExperiences?.length,
+        projects: !!extraction.projects?.length,
+        awards: !!extraction.awards?.length,
+        publications: !!extraction.publications?.length,
+        certificates: !!extraction.certificates?.length,
+        languages: !!extraction.languages?.length,
+        courses: !!extraction.courses?.length,
+        references: !!extraction.references?.length,
+        interests: !!extraction.interests?.length,
     };
 }
 
