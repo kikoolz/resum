@@ -22,7 +22,7 @@ function getProvider() {
 }
 
 export function getAiModel() {
-  return getProvider()("gemini-2.5-flash");
+  return getProvider()(MODELS[0]);
 }
 
 export function getAiModelWithFallback() {
@@ -30,4 +30,4 @@ export function getAiModelWithFallback() {
   return MODELS.map((id) => provider(id));
 }
 
-export const MODEL_ID = "gemini-2.5-flash";
+export const MODEL_ID = MODELS[0];

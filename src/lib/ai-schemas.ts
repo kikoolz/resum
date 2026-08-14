@@ -9,39 +9,41 @@ export const aiResumeExtractionSchema = z.object({
     firstName: z
         .string()
         .optional()
-        .describe("First name — copy exactly from the PDF"),
+        .describe("First name of the candidate"),
     lastName: z
         .string()
         .optional()
-        .describe("Last name / surname — copy exactly from the PDF"),
+        .describe("Last name / surname of the candidate"),
     jobTitle: z
         .string()
         .optional()
-        .describe("Job title or professional headline — copy exactly from the PDF"),
-    email: z.string().optional().describe("Email address — copy exactly from the PDF"),
-    phone: z.string().optional().describe("Phone number — copy exactly from the PDF"),
-    city: z.string().optional().describe("City — copy exactly from the PDF"),
+        .describe("Current or target job title / professional headline"),
+    email: z.string().optional().describe("Email address"),
+    phone: z.string().optional().describe("Phone number"),
+    city: z.string().optional().describe("City of residence"),
     country: z
         .string()
         .optional()
-        .describe("Country or state — copy exactly from the PDF"),
+        .describe("Country or state of residence"),
     linkedin: z
         .string()
         .optional()
-        .describe("LinkedIn URL — copy exactly from the PDF, full URL"),
+        .describe("LinkedIn profile URL (full URL)"),
     website: z
         .string()
         .optional()
-        .describe("Website or portfolio URL — copy exactly from the PDF"),
+        .describe("Personal website or portfolio URL"),
     summary: z
         .string()
         .optional()
-        .describe("Professional summary or objective — copy VERBATIM from the PDF, do not paraphrase"),
+        .describe(
+            "Professional summary, objective statement, or profile section",
+        ),
     skills: z
         .array(z.string())
         .optional()
         .describe(
-            "Individual skills as separate strings. Copy each skill name exactly from the PDF.",
+            "List of individual skills, technologies, and tools. Extract each skill separately, not grouped.",
         ),
 
     workExperiences: z
@@ -50,40 +52,40 @@ export const aiResumeExtractionSchema = z.object({
                 position: z
                     .string()
                     .optional()
-                    .describe("Job title — copy exactly from the PDF"),
+                    .describe("Job title / position"),
                 company: z
                     .string()
                     .optional()
-                    .describe("Company name — copy exactly from the PDF"),
-                location: z.string().optional().describe("Job location — copy exactly from the PDF"),
+                    .describe("Company or organization name"),
+                location: z.string().optional().describe("Job location"),
                 startDate: z
                     .string()
                     .optional()
                     .describe(
-                        "Start date normalized to YYYY-MM-DD",
+                        "Start date in YYYY-MM-DD format. If only year, use YYYY-01-01. If month and year, use YYYY-MM-01.",
                     ),
                 endDate: z
                     .string()
                     .optional()
                     .describe(
-                        "End date normalized to YYYY-MM-DD. Null if current/present.",
+                        "End date in YYYY-MM-DD format. Leave empty if current/present position.",
                     ),
                 description: z
                     .string()
                     .optional()
                     .describe(
-                        "Responsibilities and achievements — copy VERBATIM, join bullet points with \\n",
+                        "Responsibilities and achievements. Preserve bullet points as newline-separated items.",
                     ),
                 subheading: z
                     .string()
                     .optional()
                     .describe(
-                        "Subheading like department or team name — copy exactly from the PDF",
+                        "Additional subheading like department or team name",
                     ),
             }),
         )
         .optional()
-        .describe("Work experience entries, preserve original order from the PDF"),
+        .describe("Work experience entries, ordered from most recent first"),
 
     educations: z
         .array(
@@ -92,39 +94,39 @@ export const aiResumeExtractionSchema = z.object({
                     .string()
                     .optional()
                     .describe(
-                        "Degree type — copy exactly from the PDF",
+                        "Degree type (e.g. Bachelor of Science, Master of Arts, PhD)",
                     ),
                 school: z
                     .string()
                     .optional()
-                    .describe("School name — copy exactly from the PDF"),
+                    .describe("University or institution name"),
                 fieldOfStudy: z
                     .string()
                     .optional()
-                    .describe("Field of study — copy exactly from the PDF"),
+                    .describe("Major, field of study, or concentration"),
                 gpa: z
                     .string()
                     .optional()
-                    .describe("GPA — copy exactly from the PDF, null if not listed"),
-                location: z.string().optional().describe("School location — copy exactly from the PDF"),
+                    .describe("GPA or grade if listed"),
+                location: z.string().optional().describe("School location"),
                 startDate: z
                     .string()
                     .optional()
-                    .describe("Start date normalized to YYYY-MM-DD"),
+                    .describe("Start date in YYYY-MM-DD format"),
                 endDate: z
                     .string()
                     .optional()
-                    .describe("End date normalized to YYYY-MM-DD"),
+                    .describe("End date or expected graduation in YYYY-MM-DD"),
                 description: z
                     .string()
                     .optional()
                     .describe(
-                        "Coursework, honors, activities — copy VERBATIM from the PDF",
+                        "Relevant coursework, honors, activities, or thesis",
                     ),
             }),
         )
         .optional()
-        .describe("Education entries, preserve original order from the PDF"),
+        .describe("Education entries, ordered from most recent first"),
 
     projects: z
         .array(
@@ -132,28 +134,28 @@ export const aiResumeExtractionSchema = z.object({
                 title: z
                     .string()
                     .optional()
-                    .describe("Project name — copy exactly from the PDF"),
+                    .describe("Project name or title"),
                 subtitle: z
                     .string()
                     .optional()
-                    .describe("Subtitle or tech stack — copy exactly from the PDF"),
+                    .describe("Brief subtitle, tagline, or tech stack used"),
                 description: z
                     .string()
                     .optional()
-                    .describe("Project description — copy VERBATIM from the PDF"),
-                link: z.string().optional().describe("Project URL — copy exactly from the PDF"),
+                    .describe("Project description and key outcomes"),
+                link: z.string().optional().describe("Project URL if listed"),
                 startDate: z
                     .string()
                     .optional()
-                    .describe("Start date normalized to YYYY-MM-DD"),
+                    .describe("Start date in YYYY-MM-DD format"),
                 endDate: z
                     .string()
                     .optional()
-                    .describe("End date normalized to YYYY-MM-DD"),
+                    .describe("End date in YYYY-MM-DD format"),
             }),
         )
         .optional()
-        .describe("Project entries from the PDF"),
+        .describe("Projects section entries"),
 
     awards: z
         .array(
@@ -161,23 +163,23 @@ export const aiResumeExtractionSchema = z.object({
                 title: z
                     .string()
                     .optional()
-                    .describe("Award name — copy exactly from the PDF"),
+                    .describe("Award or honor name"),
                 issuer: z
                     .string()
                     .optional()
-                    .describe("Issuing organization — copy exactly from the PDF"),
+                    .describe("Organization that issued the award"),
                 description: z
                     .string()
                     .optional()
-                    .describe("Award description — copy VERBATIM from the PDF"),
+                    .describe("Award description or reason"),
                 date: z
                     .string()
                     .optional()
-                    .describe("Date normalized to YYYY-MM-DD"),
+                    .describe("Date received in YYYY-MM-DD format"),
             }),
         )
         .optional()
-        .describe("Awards and honors from the PDF"),
+        .describe("Awards, honors, and achievements"),
 
     publications: z
         .array(
@@ -185,31 +187,31 @@ export const aiResumeExtractionSchema = z.object({
                 title: z
                     .string()
                     .optional()
-                    .describe("Publication title — copy exactly from the PDF"),
+                    .describe("Publication title"),
                 publisher: z
                     .string()
                     .optional()
-                    .describe("Publisher or journal — copy exactly from the PDF"),
+                    .describe("Journal, conference, or publisher name"),
                 authors: z
                     .string()
                     .optional()
-                    .describe("Authors — copy exactly from the PDF, comma-separated"),
+                    .describe("Author names as a comma-separated string"),
                 description: z
                     .string()
                     .optional()
-                    .describe("Description — copy VERBATIM from the PDF"),
+                    .describe("Abstract or brief description"),
                 date: z
                     .string()
                     .optional()
-                    .describe("Date normalized to YYYY-MM-DD"),
+                    .describe("Publication date in YYYY-MM-DD format"),
                 link: z
                     .string()
                     .optional()
-                    .describe("URL — copy exactly from the PDF"),
+                    .describe("URL to the publication"),
             }),
         )
         .optional()
-        .describe("Publications from the PDF"),
+        .describe("Publications, papers, or articles"),
 
     certificates: z
         .array(
@@ -217,31 +219,31 @@ export const aiResumeExtractionSchema = z.object({
                 title: z
                     .string()
                     .optional()
-                    .describe("Certificate name — copy exactly from the PDF"),
+                    .describe("Certificate or certification name"),
                 issuer: z
                     .string()
                     .optional()
-                    .describe("Issuing organization — copy exactly from the PDF"),
+                    .describe("Issuing organization"),
                 description: z
                     .string()
                     .optional()
-                    .describe("Description — copy VERBATIM from the PDF"),
+                    .describe("Certificate description"),
                 date: z
                     .string()
                     .optional()
-                    .describe("Date normalized to YYYY-MM-DD"),
+                    .describe("Date issued in YYYY-MM-DD format"),
                 link: z
                     .string()
                     .optional()
-                    .describe("URL — copy exactly from the PDF"),
+                    .describe("Verification URL"),
                 credentialId: z
                     .string()
                     .optional()
-                    .describe("Credential ID — copy exactly from the PDF"),
+                    .describe("Credential or certificate ID"),
             }),
         )
         .optional()
-        .describe("Certifications from the PDF"),
+        .describe("Certifications and professional credentials"),
 
     languages: z
         .array(
@@ -249,38 +251,38 @@ export const aiResumeExtractionSchema = z.object({
                 language: z
                     .string()
                     .optional()
-                    .describe("Language name — copy exactly from the PDF"),
+                    .describe("Language name (e.g. English, Spanish)"),
                 proficiency: z
                     .string()
                     .optional()
                     .describe(
-                        "Proficiency level — copy exactly from the PDF",
+                        "Proficiency level (e.g. Native, Fluent, Advanced, Intermediate, Basic)",
                     ),
             }),
         )
         .optional()
-        .describe("Languages from the PDF"),
+        .describe("Languages spoken"),
 
     courses: z
         .array(
             z.object({
-                name: z.string().optional().describe("Course name — copy exactly from the PDF"),
+                name: z.string().optional().describe("Course name"),
                 institution: z
                     .string()
                     .optional()
-                    .describe("Institution — copy exactly from the PDF"),
+                    .describe("Institution or platform"),
                 description: z
                     .string()
                     .optional()
-                    .describe("Description — copy VERBATIM from the PDF"),
+                    .describe("Course description or key topics"),
                 date: z
                     .string()
                     .optional()
-                    .describe("Date normalized to YYYY-MM-DD"),
+                    .describe("Completion date in YYYY-MM-DD format"),
             }),
         )
         .optional()
-        .describe("Courses from the PDF"),
+        .describe("Courses and training"),
 
     references: z
         .array(
@@ -288,27 +290,27 @@ export const aiResumeExtractionSchema = z.object({
                 name: z
                     .string()
                     .optional()
-                    .describe("Reference name — copy exactly from the PDF"),
+                    .describe("Reference person full name"),
                 position: z
                     .string()
                     .optional()
-                    .describe("Reference job title — copy exactly from the PDF"),
+                    .describe("Reference person's job title"),
                 company: z
                     .string()
                     .optional()
-                    .describe("Reference company — copy exactly from the PDF"),
+                    .describe("Reference person's company"),
                 email: z
                     .string()
                     .optional()
-                    .describe("Reference email — copy exactly from the PDF"),
+                    .describe("Reference email address"),
                 phone: z
                     .string()
                     .optional()
-                    .describe("Reference phone — copy exactly from the PDF"),
+                    .describe("Reference phone number"),
             }),
         )
         .optional()
-        .describe("References from the PDF"),
+        .describe("Professional references"),
 
     interests: z
         .array(
@@ -316,11 +318,11 @@ export const aiResumeExtractionSchema = z.object({
                 name: z
                     .string()
                     .optional()
-                    .describe("Interest or hobby — copy exactly from the PDF"),
+                    .describe("Interest, hobby, or activity"),
             }),
         )
         .optional()
-        .describe("Interests from the PDF"),
+        .describe("Personal interests and hobbies"),
 });
 
 export type AiResumeExtraction = z.infer<typeof aiResumeExtractionSchema>;

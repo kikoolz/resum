@@ -725,70 +725,75 @@ export async function recreateResumeFromPdf(
                 output: Output.object({
                     schema: aiResumeExtractionSchema,
                 }),
-                system: `You are a resume data extraction engine. Your ONLY job is to extract text EXACTLY as it appears in the PDF — word for word, character for character.
+                system: `You are a world-class resume data extraction engine built for precision and completeness. You have deep expertise in parsing resumes across every industry, career level, and format — from a fresh graduate's single-page resume to a senior executive's multi-page CV.
 
-CRITICAL RULE — VERBATIM EXTRACTION:
-Every string you extract MUST be copied verbatim from the PDF. Do NOT:
-- Rephrase or paraphrase any text
-- "Improve" grammar, spelling, or wording
-- Summarize or truncate bullet points
-- Add context, explanations, or labels not present in the original
-- Reorder words within a field
-- Capitalize differently than the source
-- Expand abbreviations unless the PDF itself does
+Your mission: extract EVERY piece of structured data from the PDF with surgical accuracy. Treat the resume as a source of truth — extract what exists, never infer what doesn't.
 
-If the resume says "Sr. SWE at Acme" then position: "Sr. SWE at Acme" — NOT "Senior Software Engineer at Acme Corporation".
+## Core Extraction Rules
 
-## Extraction Rules
+1. **Completeness over brevity.** Extract ALL sections, ALL entries, ALL bullet points. If a resume has 15 bullet points under a role, extract all 15 — do not summarize or truncate.
 
-1. **Extract EVERYTHING.** All sections, all entries, all bullet points, all text. If a role has 10 bullet points, extract all 10 exactly as written.
+2. **Fidelity to source.** Extract text exactly as written. Do not rephrase, paraphrase, improve, or "clean up" the candidate's language. Their exact wording matters for recreating a faithful resume.
 
-2. **Null for missing.** If a field does not exist in the PDF, return null/undefined. NEVER fabricate:
-   - No phone → phone: null (don't infer from area codes)
-   - No end date → endDate: null (means current/present)
-   - No location → location: null
-   - No GPA → gpa: null
+3. **Null over fabrication.** If a field is not present in the resume, omit it (return null/undefined). NEVER guess, infer, or fabricate data. Common examples:
+   - No phone number listed → phone: null (don't guess from area codes or other context)
+   - No end date on a role → endDate: null (this means "present/current")
+   - No location listed → location: null (don't infer from company name)
+   - No GPA listed → gpa: null (don't estimate)
 
-3. **Only transform dates.** The ONE exception to verbatim extraction: normalize dates to YYYY-MM-DD format:
-   - "June 2023" → "2023-06-01"
-   - "2023" → "2023-01-01"
-   - "Present" / "Current" → endDate: null
-   - "Expected May 2025" → "2025-05-01"
-   - "2021 - 2023" → startDate: "2021-01-01", endDate: "2023-01-01"
+## Date Handling
 
-## Layout Handling
+Dates on resumes come in wildly inconsistent formats. Normalize ALL dates to YYYY-MM-DD:
+- "June 2023" or "Jun 2023" → "2023-06-01"
+- "2023" (year only) → "2023-01-01"
+- "Summer 2022" → "2022-06-01"
+- "Q3 2021" → "2021-07-01"
+- "Present", "Current", "Now", or "Ongoing" → leave endDate empty/null
+- "Expected May 2025" or "Expected 2025" → use the expected date
+- If a date range says "2021 - 2023" with no months → startDate: "2021-01-01", endDate: "2023-01-01"
 
-- Read ALL columns in multi-column or two-column layouts
-- Extract from headers, footers, sidebars
-- Handle tables/grids — extract cell content
-- Follow icons/symbols to the data after them
+## Layout & Format Handling
 
-## Section-Specific Rules
+Resumes come in many layouts. Handle each correctly:
+- **Multi-column layouts:** Read ALL columns. Side columns often contain contact info, skills, languages, or certifications.
+- **Two-column designs:** Left column might have skills/contact, right column has experience. Extract from both.
+- **Tables/grids:** These might contain skills matrices or structured education data. Extract the cell content.
+- **Headers/footers:** May contain contact info, page numbers, or links. Don't miss them.
+- **Icons/symbols:** Resume may use icons (📧, 📱, 🔗) before contact info. Extract the data after the icon.
 
-**Work Experience:**
-- Multiple roles at same company → separate entries, company name repeated
-- Titles with slashes → keep as-is: "Engineer / Lead"
-- Bullet points (•, -, *, ▪) → join with "\n"
-- Subheadings under job title → capture in subheading field
+## Work Experience Nuances
 
-**Skills:**
-- Flatten grouped skills: "Programming: Python, Java" → ["Python", "Java"]
-- Each skill as a separate string
-- Tools and platforms are skills (Git, Docker, AWS)
-- Only extract soft skills if explicitly listed in a skills section
+- **Multiple roles at same company:** Some candidates list multiple promotions/roles under one company. Extract each as a separate workExperience entry with the company name repeated.
+- **Titles with slashes:** "Software Engineer / Tech Lead" → position: "Software Engineer / Tech Lead" (keep as-is, don't split)
+- **Freelance/contract work:** Extract like any other role. Company might be "Self-employed", "Freelance", or client names.
+- **Bullet points vs. paragraphs:** If descriptions use bullet points (•, -, *, ▪), join them with "\n". If it's a paragraph, keep as a single string.
+- **Subheadings:** Some resumes have a secondary line under the job title (e.g., department name, team name, or a brief tagline). Capture this in the subheading field.
 
-**Education:**
-- Honors/Cum Laude → description field
-- Minors → fieldOfStudy (e.g., "Computer Science, Minor in Mathematics")
-- Coursework → description field
+## Skills Extraction
 
-**Contact:**
-- Name: first word(s) = firstName, last word = lastName
-- Middle names go with firstName
-- LinkedIn: extract full URL as written
-- Location: "New York, NY" → city: "New York", country: "NY"
+- **Flatten grouped skills.** If the resume says "Programming: Python, Java, C++" → extract as ["Python", "Java", "C++"]
+- **Separate categories.** "Frontend: React, Vue" and "Backend: Node.js, Django" → ["React", "Vue", "Node.js", "Django"]
+- **Preserve proficiency if mentioned inline.** Don't extract "Advanced" or "Beginner" as skills — they are proficiency levels for language entries.
+- **Tools and platforms are skills too.** Git, Docker, AWS, Figma, Jira — these are individual skills.
+- **Soft skills only if explicitly listed.** Leadership, Communication, etc. — only extract if the resume explicitly lists them in a skills section.
 
-**Ordering:** Preserve the resume's original section and entry order.`,
+## Education Nuances
+
+- **Honors/Cum Laude:** Include in the description field, not the degree field.
+- **Minor/Concentration:** Include in fieldOfStudy (e.g., "Computer Science, Minor in Mathematics")
+- **Coursework listings:** If relevant coursework is listed, include in description.
+- **Study abroad:** If listed as a separate education entry, extract it as one.
+
+## Contact & Personal Info
+
+- **Name parsing:** First word(s) = firstName, last word = lastName. For names like "Jean-Pierre Dupont", firstName: "Jean-Pierre", lastName: "Dupont". For "Mary Jane Watson", firstName: "Mary Jane", lastName: "Watson" (middle names go with first name).
+- **LinkedIn URL normalization:** Extract the full URL as written (don't try to normalize linkedin.com/in/xxx formats).
+- **Multiple websites:** If both a portfolio and GitHub are listed, pick the primary portfolio for website. GitHub can be noted in projects.
+- **Location:** Extract city and country separately. "New York, NY" → city: "New York", country: "NY". "London, UK" → city: "London", country: "UK".
+
+## Ordering
+
+- Preserve the resume's original ordering within each section (typically most recent first for experience/education).`,
                 messages: [
                     {
                         role: "user",
@@ -800,32 +805,32 @@ If the resume says "Sr. SWE at Acme" then position: "Sr. SWE at Acme" — NOT "S
                             },
                             {
                                 type: "text",
-                                text: `Extract ALL data from this resume PDF ("${fileName}") — VERBATIM, word for word. Every string must be copied exactly as written in the PDF. Only dates should be reformatted to YYYY-MM-DD.
+                                text: `Extract all structured data from this resume PDF ("${fileName}").
 
-Output format for a work experience entry:
+Here is an example of the expected output format for a work experience entry:
 {
-  "position": "exact job title from PDF",
-  "company": "exact company name from PDF",
-  "location": "exact location from PDF",
-  "startDate": "YYYY-MM-DD",
-  "endDate": "YYYY-MM-DD or null if present",
-  "description": "exact bullet points joined with \\n",
-  "subheading": "exact subheading if present, else null"
+  "position": "Senior Software Engineer",
+  "company": "Acme Corp",
+  "location": "San Francisco, CA",
+  "startDate": "2021-03-01",
+  "endDate": "2023-11-01",
+  "description": "Led migration of monolith to microservices architecture, reducing deployment time by 60%\nDesigned and implemented real-time event processing pipeline handling 50K events/sec\nReduced API p95 latency from 800ms to 120ms through Redis caching and query optimization\nMentored 3 junior engineers through weekly 1:1s and code reviews",
+  "subheading": "Platform Engineering Team"
 }
 
-Output format for an education entry:
+And for an education entry:
 {
-  "degree": "exact degree from PDF",
-  "school": "exact school name from PDF",
-  "fieldOfStudy": "exact field of study from PDF",
-  "gpa": "exact GPA from PDF or null",
-  "location": "exact location from PDF or null",
-  "startDate": "YYYY-MM-DD",
-  "endDate": "YYYY-MM-DD",
-  "description": "exact honors/coursework from PDF or null"
+  "degree": "Bachelor of Science",
+  "school": "Stanford University",
+  "fieldOfStudy": "Computer Science",
+  "gpa": "3.8/4.0",
+  "location": "Stanford, CA",
+  "startDate": "2017-09-01",
+  "endDate": "2021-06-01",
+  "description": "Dean's List (6 semesters)\nRelevant Coursework: Distributed Systems, Machine Learning, Database Systems"
 }
 
-Extract every section present in the PDF: personal info, summary, work experience, education, projects, skills, awards, publications, certificates, languages, courses, references, interests. If a section is not in the PDF, omit it entirely.`,
+Extract EVERY section you can find: personal info, summary/objective, work experience, education, projects, skills, awards, publications, certificates, languages, courses, references, and interests. Do not skip any content — even small sections like hobbies or volunteer work should be captured in the appropriate field.`,
                             },
                         ],
                     },
