@@ -15,6 +15,7 @@ import { FileText, FileDown, Maximize2, Minus, Plus, Printer, Lock } from "lucid
 import { useReactToPrint } from "react-to-print";
 import type { ResumeValues } from "@/lib/validation";
 import { PLAN_LIMITS } from "@/lib/subscription";
+import { TEMPLATES } from "@/lib/templates";
 import PrintableResume from "./PrintableResume";
 import {
     FONT_FAMILIES,
@@ -231,33 +232,12 @@ export default function ResumePreviewSection({
                             <SelectValue />
                         </SelectTrigger>
                         <SelectContent align="center">
-                            {([
-                                { value: "professional", label: "Professional" },
-                                { value: "creative", label: "Creative" },
-                                { value: "modern", label: "Modern" },
-                                { value: "simple", label: "Simple" },
-                                { value: "europass", label: "Europass" },
-                                { value: "executive", label: "Executive" },
-                                { value: "blush", label: "Blush" },
-                                { value: "fresh", label: "Fresh" },
-                                { value: "classic", label: "Classic" },
-                                { value: "sleek", label: "Sleek" },
-                                { value: "profile", label: "Profile" },
-                                { value: "euro-modern", label: "Euro Modern" },
-                                { value: "badge", label: "Badge" },
-                                { value: "timeline", label: "Timeline" },
-                                { value: "minimal", label: "Minimal" },
-                                { value: "notion", label: "Notion" },
-                                { value: "academy", label: "Academy" },
-                                { value: "bold", label: "Bold" },
-                                { value: "executive-pro", label: "Executive Pro" },
-                                { value: "classic-timeline", label: "Classic Timeline" },
-                            ] as const).map((tpl) => {
-                                const isAllowed = allowedTemplates.includes(tpl.value);
+                            {TEMPLATES.map((tpl) => {
+                                const isAllowed = allowedTemplates.includes(tpl.key);
                                 return (
                                     <SelectItem
-                                        key={tpl.value}
-                                        value={tpl.value}
+                                        key={tpl.key}
+                                        value={tpl.key}
                                         disabled={!isAllowed}
                                     >
                                         <span className="flex items-center gap-1.5">

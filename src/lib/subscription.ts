@@ -2,6 +2,7 @@ import { getDb } from "@/db";
 import { resumes, userSubscriptions, coverLetters } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getPlanFromPriceId, isLifetimePriceId, type PlanTier } from "@/lib/stripe";
+import { FREE_TEMPLATE_KEYS, PREMIUM_TEMPLATE_KEYS } from "@/lib/templates";
 
 // ---------------------------------------------------------------------------
 // Plan limits
@@ -14,7 +15,7 @@ export const PLAN_LIMITS = {
     aiTokensMonthly: 50_000,
     aiRecreateMonthly: 1,
     aiAnalyzeMonthly: 1,
-    templates: ["simple", "modern"],
+    templates: FREE_TEMPLATE_KEYS,
   },
   pro: {
     resumes: Infinity,
@@ -22,12 +23,7 @@ export const PLAN_LIMITS = {
     aiTokensMonthly: 500_000,
     aiRecreateMonthly: Infinity,
     aiAnalyzeMonthly: Infinity,
-    templates: [
-      "simple", "modern", "professional", "creative", "executive",
-      "euro-modern", "badge", "timeline", "minimal", "notion",
-      "academy", "bold", "classic-timeline", "classic", "fresh",
-      "blush", "sleek", "profile", "europass", "executive-pro",
-    ],
+    templates: PREMIUM_TEMPLATE_KEYS,
   },
   lifetime: {
     resumes: Infinity,
@@ -35,12 +31,7 @@ export const PLAN_LIMITS = {
     aiTokensMonthly: 500_000,
     aiRecreateMonthly: Infinity,
     aiAnalyzeMonthly: Infinity,
-    templates: [
-      "simple", "modern", "professional", "creative", "executive",
-      "euro-modern", "badge", "timeline", "minimal", "notion",
-      "academy", "bold", "classic-timeline", "classic", "fresh",
-      "blush", "sleek", "profile", "europass", "executive-pro",
-    ],
+    templates: PREMIUM_TEMPLATE_KEYS,
   },
 } as const;
 

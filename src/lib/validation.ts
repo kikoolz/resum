@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ALL_TEMPLATE_KEYS } from "./templates";
 
 const optionalString = z.string().trim().max(200).optional();
 const optionalUrl = z.string().trim().max(500).optional().or(z.literal(""));
@@ -133,7 +134,7 @@ export const resumeSchema = z.object({
         .optional(),
     borderStyle: z.string().max(50).optional(),
     layout: z.enum(["single-column", "two-column", "split-date"]).optional(),
-    templateName: z.enum(["professional", "creative", "modern", "simple", "europass", "executive", "blush", "fresh", "classic", "sleek", "profile", "euro-modern", "badge", "timeline", "minimal", "notion", "academy", "bold", "executive-pro", "classic-timeline"]).optional(),
+    templateName: z.enum(ALL_TEMPLATE_KEYS as [string, ...string[]]).optional(),
     summary: z.string().trim().max(1000).optional(),
     firstName: optionalString,
     lastName: optionalString,
