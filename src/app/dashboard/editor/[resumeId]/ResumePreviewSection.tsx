@@ -11,9 +11,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { FileText, FileDown, Maximize2, Minus, Plus, Printer } from "lucide-react";
+import { FileText, FileDown, Maximize2, Minus, Plus, Printer, Lock } from "lucide-react";
 import { useReactToPrint } from "react-to-print";
 import type { ResumeValues } from "@/lib/validation";
+import { PLAN_LIMITS } from "@/lib/subscription";
 import PrintableResume from "./PrintableResume";
 import {
     FONT_FAMILIES,
@@ -53,6 +54,8 @@ export default function ResumePreviewSection({
     const fontFamilyKey = previewSettings.fontFamily;
     const fontScale = fontSize / 10;
     const fontFamilyCss = getPreviewFontFamilyCss(fontFamilyKey);
+
+    const allowedTemplates = PLAN_LIMITS[userTier ?? "free"].templates as readonly string[];
 
     const containerRef = useRef<HTMLDivElement>(null);
     const printRef = useRef<HTMLDivElement>(null);
@@ -209,6 +212,63 @@ export default function ResumePreviewSection({
                                     {family.label}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+
+                    <div className="h-4 w-px bg-border" />
+
+                    {/* Template Selector */}
+                    <Select
+                        value={resumeData.templateName || "professional"}
+                        onValueChange={(value) =>
+                            setResumeData((prev) => ({
+                                ...prev,
+                                templateName: value as ResumeValues["templateName"],
+                            }))
+                        }
+                    >
+                        <SelectTrigger className="h-8 w-[130px] border-none bg-transparent text-xs font-medium focus:ring-0">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent align="center">
+                            {([
+                                { value: "professional", label: "Professional" },
+                                { value: "creative", label: "Creative" },
+                                { value: "modern", label: "Modern" },
+                                { value: "simple", label: "Simple" },
+                                { value: "europass", label: "Europass" },
+                                { value: "executive", label: "Executive" },
+                                { value: "blush", label: "Blush" },
+                                { value: "fresh", label: "Fresh" },
+                                { value: "classic", label: "Classic" },
+                                { value: "sleek", label: "Sleek" },
+                                { value: "profile", label: "Profile" },
+                                { value: "euro-modern", label: "Euro Modern" },
+                                { value: "badge", label: "Badge" },
+                                { value: "timeline", label: "Timeline" },
+                                { value: "minimal", label: "Minimal" },
+                                { value: "notion", label: "Notion" },
+                                { value: "academy", label: "Academy" },
+                                { value: "bold", label: "Bold" },
+                                { value: "executive-pro", label: "Executive Pro" },
+                                { value: "classic-timeline", label: "Classic Timeline" },
+                            ] as const).map((tpl) => {
+                                const isAllowed = allowedTemplates.includes(tpl.value);
+                                return (
+                                    <SelectItem
+                                        key={tpl.value}
+                                        value={tpl.value}
+                                        disabled={!isAllowed}
+                                    >
+                                        <span className="flex items-center gap-1.5">
+                                            {tpl.label}
+                                            {!isAllowed && (
+                                                <Lock className="h-3 w-3 text-muted-foreground" />
+                                            )}
+                                        </span>
+                                    </SelectItem>
+                                );
+                            })}
                         </SelectContent>
                     </Select>
 
