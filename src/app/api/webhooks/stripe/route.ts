@@ -32,14 +32,15 @@ export async function POST(req: NextRequest) {
 
   const db = await getDb();
 
-  // Persisted dedup: check if this event was already processed
-  const [existing] = await db
-    .select()
-    .from(processedStripeEvents)
-    .where(eq(processedStripeEvents.eventId, event.id))
-    .limit(1);
-
-  if (existing) {
+  // Claim this event before processing side effects.
+  // If the UNIQUE constraint fires, another request already claimed it — skip.
+  try {
+    await db.insert(processedStripeEvents).values({
+      eventId: event.id,
+      eventType: event.type,
+    });
+  } catch (insertErr) {
+    // UNIQUE constraint violation = already processed or in-progress
     console.log(`[Webhook] Skipping duplicate event ${event.id}`);
     return NextResponse.json({ received: true });
   }
@@ -205,12 +206,6 @@ export async function POST(req: NextRequest) {
         break;
       }
     }
-
-    // Record event as processed AFTER successful handling
-    await db.insert(processedStripeEvents).values({
-      eventId: event.id,
-      eventType: event.type,
-    });
 
     return NextResponse.json({ received: true });
   } catch (error) {
