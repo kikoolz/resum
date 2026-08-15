@@ -16,13 +16,6 @@ export function getStripe(): Stripe {
   return _stripe;
 }
 
-// Keep a named export for backward compat — re-export as property
-export const stripe = new Proxy({} as Stripe, {
-  get(_, prop) {
-    return (getStripe() as any)[prop];
-  },
-});
-
 // ---------------------------------------------------------------------------
 // Price IDs — create these in your Stripe Dashboard and paste here
 // ---------------------------------------------------------------------------

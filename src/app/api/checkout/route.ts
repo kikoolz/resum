@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, STRIPE_PRICES, ALL_PRICE_IDS, isLifetimePriceId } from "@/lib/stripe";
+import { getStripe, STRIPE_PRICES, ALL_PRICE_IDS, isLifetimePriceId } from "@/lib/stripe";
 import { getSession } from "@/lib/auth-server";
 import { getDb } from "@/db";
 import { userSubscriptions } from "@/db/schema";
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     // Create Stripe customer if doesn't exist
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: session.user.email,
         name: session.user.name,
         metadata: { userId: session.user.id },
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     if (isLifetimePriceId(priceId)) {
       // One-time payment for lifetime access
-      const checkoutSession = await stripe.checkout.sessions.create({
+      const checkoutSession = await getStripe().checkout.sessions.create({
         customer: customerId,
         mode: "payment",
         payment_method_types: ["card"],
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Subscription checkout (pro monthly or yearly)
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const checkoutSession = await getStripe().checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
       payment_method_types: ["card"],

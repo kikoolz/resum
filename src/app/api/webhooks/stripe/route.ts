@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe, isLifetimePriceId } from "@/lib/stripe";
+import { getStripe, isLifetimePriceId } from "@/lib/stripe";
 import { getDb } from "@/db";
 import { userSubscriptions } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET!,
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         const subscriptionId = session.subscription as string;
         if (!subscriptionId) break;
 
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
         const periodEnd = new Date(subscription.items.data[0].current_period_end * 1000);
 
         await db
@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
 
         if (!subId) break;
 
-        const subscription = await stripe.subscriptions.retrieve(subId);
+        const subscription = await getStripe().subscriptions.retrieve(subId);
         const userId = subscription.metadata?.userId;
 
         if (!userId) break;
@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
 
         if (!subId) break;
 
-        const subscription = await stripe.subscriptions.retrieve(subId);
+        const subscription = await getStripe().subscriptions.retrieve(subId);
         const userId = subscription.metadata?.userId;
 
         if (!userId) break;
