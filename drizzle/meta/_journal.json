@@ -78,6 +78,20 @@
       "when": 1786555385059,
       "tag": "0010_nosy_darwin",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1786900000000,
+      "tag": "0012_lonely_darwin",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1786830380973,
+      "tag": "0012_lonely_darwin",
+      "breakpoints": true
     }
   ]
 }

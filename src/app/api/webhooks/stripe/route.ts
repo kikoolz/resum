@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe, isLifetimePriceId } from "@/lib/stripe";
 import { getDb } from "@/db";
-import { userSubscriptions } from "@/db/schema";
+import { userSubscriptions, processedStripeEvents } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { grantReferralReward } from "@/lib/referrals";
 import Stripe from "stripe";
 
 // Disable body parsing — Stripe needs the raw body for signature verification
 export const runtime = "nodejs";
-
-// Event dedup: in-memory Set to skip Stripe webhook retries (resets on cold start, acceptable)
-const processedEventIds = new Set<string>();
-const MAX_EVENT_CACHE = 1000;
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -34,19 +30,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Dedup: skip already-processed events (Stripe retries on timeout)
-  if (processedEventIds.has(event.id)) {
+  const db = await getDb();
+
+  // Persisted dedup: check if this event was already processed
+  const [existing] = await db
+    .select()
+    .from(processedStripeEvents)
+    .where(eq(processedStripeEvents.eventId, event.id))
+    .limit(1);
+
+  if (existing) {
     console.log(`[Webhook] Skipping duplicate event ${event.id}`);
     return NextResponse.json({ received: true });
   }
-  processedEventIds.add(event.id);
-  // Evict oldest entries if cache is too large
-  if (processedEventIds.size > MAX_EVENT_CACHE) {
-    const first = processedEventIds.values().next().value!;
-    processedEventIds.delete(first);
-  }
-
-  const db = await getDb();
 
   try {
     switch (event.type) {
@@ -209,6 +205,12 @@ export async function POST(req: NextRequest) {
         break;
       }
     }
+
+    // Record event as processed AFTER successful handling
+    await db.insert(processedStripeEvents).values({
+      eventId: event.id,
+      eventType: event.type,
+    });
 
     return NextResponse.json({ received: true });
   } catch (error) {

@@ -629,6 +629,21 @@ export const referralsRelations = relations(referrals, ({ one }) => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Processed Stripe Events (webhook idempotency)
+// ---------------------------------------------------------------------------
+export const processedStripeEvents = sqliteTable(
+    "processed_stripe_events",
+    {
+        id: integer("id").primaryKey({ autoIncrement: true }),
+        eventId: text("event_id").notNull().unique(),
+        eventType: text("event_type"),
+        processedAt: integer("processed_at")
+            .notNull()
+            .default(sql`(cast((julianday('now') - 2440587.5) * 86400000 as integer))`),
+    },
+);
+
+// ---------------------------------------------------------------------------
 // Combine all schemas here for migrations
 // ---------------------------------------------------------------------------
 export const schema = {
@@ -665,4 +680,5 @@ export const schema = {
     aiUsageLogs,
     referrals,
     referralsRelations,
+    processedStripeEvents,
 } as const;
