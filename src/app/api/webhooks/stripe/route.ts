@@ -9,6 +9,10 @@ import Stripe from "stripe";
 // Disable body parsing — Stripe needs the raw body for signature verification
 export const runtime = "nodejs";
 
+// Event dedup: in-memory Set to skip Stripe webhook retries (resets on cold start, acceptable)
+const processedEventIds = new Set<string>();
+const MAX_EVENT_CACHE = 1000;
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature");
@@ -28,6 +32,18 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[Webhook] Signature verification failed:", err);
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  // Dedup: skip already-processed events (Stripe retries on timeout)
+  if (processedEventIds.has(event.id)) {
+    console.log(`[Webhook] Skipping duplicate event ${event.id}`);
+    return NextResponse.json({ received: true });
+  }
+  processedEventIds.add(event.id);
+  // Evict oldest entries if cache is too large
+  if (processedEventIds.size > MAX_EVENT_CACHE) {
+    const first = processedEventIds.values().next().value!;
+    processedEventIds.delete(first);
   }
 
   const db = await getDb();

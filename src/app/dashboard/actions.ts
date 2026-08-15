@@ -24,7 +24,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { getAiModel, MODEL_ID } from "@/lib/ai";
-import { logAiUsage, checkAiUsageLimit } from "@/lib/ai-usage";
+import { logAiUsage, checkAiUsageLimit, checkFeatureLimit } from "@/lib/ai-usage";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import {
     aiResumeExtractionSchema,
@@ -353,200 +353,203 @@ export async function saveResume(
             ...resumeFields
         } = data;
 
-        // 5. Update the resume row
-        await db
-            .update(resumes)
-            .set({
-                ...resumeFields,
-                skills: resumeFields.skills ?? [],
-                sectionOrder: resumeFields.sectionOrder ?? [],
-                sectionVisibility: resumeFields.sectionVisibility ?? {},
-                fieldVisibility: resumeFields.fieldVisibility ?? {},
-                updatedAt: new Date(),
-            })
-            .where(eq(resumes.id, resumeId));
+        // 5. Atomic save: update resume + replace all relations in one transaction
+        await db.transaction(async (tx) => {
+            // 5a. Update the resume row
+            await tx
+                .update(resumes)
+                .set({
+                    ...resumeFields,
+                    skills: resumeFields.skills ?? [],
+                    sectionOrder: resumeFields.sectionOrder ?? [],
+                    sectionVisibility: resumeFields.sectionVisibility ?? {},
+                    fieldVisibility: resumeFields.fieldVisibility ?? {},
+                    updatedAt: new Date(),
+                })
+                .where(eq(resumes.id, resumeId));
 
-        // 6. Helper: replace all rows for a relation table
-        async function replaceRelation<T extends Record<string, unknown>>(
-            table: Parameters<typeof db.delete>[0],
-            resumeIdCol: { resumeId: string },
-            rows: T[] | undefined,
-            mapFn: (row: T, idx: number) => Record<string, unknown>,
-        ) {
-            await db.delete(table).where(
-                eq(
-                    (table as any).resumeId,
-                    resumeId,
-                ),
-            );
-            if (rows && rows.length > 0) {
-                await db.insert(table as any).values(
-                    rows.map((row, idx) => ({
-                        ...mapFn(row, idx),
+            // 5b. Helper: replace all rows for a relation table
+            async function replaceRelation<T extends Record<string, unknown>>(
+                table: Parameters<typeof tx.delete>[0],
+                _resumeIdCol: { resumeId: string },
+                rows: T[] | undefined,
+                mapFn: (row: T, idx: number) => Record<string, unknown>,
+            ) {
+                await tx.delete(table).where(
+                    eq(
+                        (table as any).resumeId,
                         resumeId,
-                    })),
+                    ),
                 );
+                if (rows && rows.length > 0) {
+                    await tx.insert(table as any).values(
+                        rows.map((row, idx) => ({
+                            ...mapFn(row, idx),
+                            resumeId,
+                        })),
+                    );
+                }
             }
-        }
 
-        // 7. Replace work experiences
-        await replaceRelation(
-            workExperiences,
-            { resumeId },
-            workExps,
-            (exp, idx) => ({
-                position: exp.position || null,
-                company: exp.company || null,
-                startDate: exp.startDate ? new Date(exp.startDate) : null,
-                endDate: exp.endDate ? new Date(exp.endDate) : null,
-                description: exp.description || null,
-                location: exp.location || null,
-                subheading: exp.subheading || null,
-                visible: exp.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace work experiences
+            await replaceRelation(
+                workExperiences,
+                { resumeId },
+                workExps,
+                (exp, idx) => ({
+                    position: exp.position || null,
+                    company: exp.company || null,
+                    startDate: exp.startDate ? new Date(exp.startDate) : null,
+                    endDate: exp.endDate ? new Date(exp.endDate) : null,
+                    description: exp.description || null,
+                    location: exp.location || null,
+                    subheading: exp.subheading || null,
+                    visible: exp.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 8. Replace educations
-        await replaceRelation(
-            educations,
-            { resumeId },
-            edus,
-            (edu, idx) => ({
-                degree: edu.degree || null,
-                school: edu.school || null,
-                fieldOfStudy: edu.fieldOfStudy || null,
-                gpa: edu.gpa || null,
-                description: edu.description || null,
-                location: edu.location || null,
-                startDate: edu.startDate ? new Date(edu.startDate) : null,
-                endDate: edu.endDate ? new Date(edu.endDate) : null,
-                visible: edu.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace educations
+            await replaceRelation(
+                educations,
+                { resumeId },
+                edus,
+                (edu, idx) => ({
+                    degree: edu.degree || null,
+                    school: edu.school || null,
+                    fieldOfStudy: edu.fieldOfStudy || null,
+                    gpa: edu.gpa || null,
+                    description: edu.description || null,
+                    location: edu.location || null,
+                    startDate: edu.startDate ? new Date(edu.startDate) : null,
+                    endDate: edu.endDate ? new Date(edu.endDate) : null,
+                    visible: edu.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 9. Replace projects
-        await replaceRelation(
-            projects,
-            { resumeId },
-            projs,
-            (p, idx) => ({
-                title: p.title || null,
-                subtitle: p.subtitle || null,
-                description: p.description || null,
-                link: p.link || null,
-                startDate: p.startDate ? new Date(p.startDate) : null,
-                endDate: p.endDate ? new Date(p.endDate) : null,
-                visible: p.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace projects
+            await replaceRelation(
+                projects,
+                { resumeId },
+                projs,
+                (p, idx) => ({
+                    title: p.title || null,
+                    subtitle: p.subtitle || null,
+                    description: p.description || null,
+                    link: p.link || null,
+                    startDate: p.startDate ? new Date(p.startDate) : null,
+                    endDate: p.endDate ? new Date(p.endDate) : null,
+                    visible: p.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 10. Replace awards
-        await replaceRelation(
-            awards,
-            { resumeId },
-            awds,
-            (a, idx) => ({
-                title: a.title || null,
-                issuer: a.issuer || null,
-                description: a.description || null,
-                date: a.date ? new Date(a.date) : null,
-                visible: a.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace awards
+            await replaceRelation(
+                awards,
+                { resumeId },
+                awds,
+                (a, idx) => ({
+                    title: a.title || null,
+                    issuer: a.issuer || null,
+                    description: a.description || null,
+                    date: a.date ? new Date(a.date) : null,
+                    visible: a.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 11. Replace publications
-        await replaceRelation(
-            publications,
-            { resumeId },
-            pubs,
-            (p, idx) => ({
-                title: p.title || null,
-                publisher: p.publisher || null,
-                authors: p.authors || null,
-                description: p.description || null,
-                date: p.date ? new Date(p.date) : null,
-                link: p.link || null,
-                visible: p.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace publications
+            await replaceRelation(
+                publications,
+                { resumeId },
+                pubs,
+                (p, idx) => ({
+                    title: p.title || null,
+                    publisher: p.publisher || null,
+                    authors: p.authors || null,
+                    description: p.description || null,
+                    date: p.date ? new Date(p.date) : null,
+                    link: p.link || null,
+                    visible: p.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 12. Replace certificates
-        await replaceRelation(
-            certificates,
-            { resumeId },
-            certs,
-            (c, idx) => ({
-                title: c.title || null,
-                issuer: c.issuer || null,
-                description: c.description || null,
-                date: c.date ? new Date(c.date) : null,
-                link: c.link || null,
-                credentialId: c.credentialId || null,
-                visible: c.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace certificates
+            await replaceRelation(
+                certificates,
+                { resumeId },
+                certs,
+                (c, idx) => ({
+                    title: c.title || null,
+                    issuer: c.issuer || null,
+                    description: c.description || null,
+                    date: c.date ? new Date(c.date) : null,
+                    link: c.link || null,
+                    credentialId: c.credentialId || null,
+                    visible: c.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 13. Replace languages
-        await replaceRelation(
-            languages,
-            { resumeId },
-            langs,
-            (l, idx) => ({
-                language: l.language || null,
-                proficiency: l.proficiency || null,
-                visible: l.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace languages
+            await replaceRelation(
+                languages,
+                { resumeId },
+                langs,
+                (l, idx) => ({
+                    language: l.language || null,
+                    proficiency: l.proficiency || null,
+                    visible: l.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 14. Replace courses
-        await replaceRelation(
-            courses,
-            { resumeId },
-            crses,
-            (c, idx) => ({
-                name: c.name || null,
-                institution: c.institution || null,
-                description: c.description || null,
-                date: c.date ? new Date(c.date) : null,
-                visible: c.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace courses
+            await replaceRelation(
+                courses,
+                { resumeId },
+                crses,
+                (c, idx) => ({
+                    name: c.name || null,
+                    institution: c.institution || null,
+                    description: c.description || null,
+                    date: c.date ? new Date(c.date) : null,
+                    visible: c.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 15. Replace references
-        await replaceRelation(
-            resumeReferences,
-            { resumeId },
-            refs,
-            (r, idx) => ({
-                name: r.name || null,
-                position: r.position || null,
-                company: r.company || null,
-                email: r.email || null,
-                phone: r.phone || null,
-                visible: r.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace references
+            await replaceRelation(
+                resumeReferences,
+                { resumeId },
+                refs,
+                (r, idx) => ({
+                    name: r.name || null,
+                    position: r.position || null,
+                    company: r.company || null,
+                    email: r.email || null,
+                    phone: r.phone || null,
+                    visible: r.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
 
-        // 16. Replace interests
-        await replaceRelation(
-            interests,
-            { resumeId },
-            ints,
-            (i, idx) => ({
-                name: i.name || null,
-                visible: i.visible ?? true,
-                displayOrder: idx,
-            }),
-        );
+            // Replace interests
+            await replaceRelation(
+                interests,
+                { resumeId },
+                ints,
+                (i, idx) => ({
+                    name: i.name || null,
+                    visible: i.visible ?? true,
+                    displayOrder: idx,
+                }),
+            );
+        });
 
         return { success: true };
     } catch (err) {
@@ -580,7 +583,7 @@ export async function deleteFile(
         }
 
         // Delete from Turso storage (data is in the DB)
-        await db.delete(userFiles).where(eq(userFiles.id, fileId));
+        await db.delete(userFiles).where(and(eq(userFiles.id, fileId), eq(userFiles.userId, session.user.id)));
 
         return { success: true };
     } catch (err) {
@@ -712,6 +715,15 @@ export async function recreateResumeFromPdf(
                 return {
                     success: false,
                     error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
+                };
+            }
+
+            // 2b. Check per-feature monthly limit
+            const featureCheck = await checkFeatureLimit(userId, "recreate");
+            if (!featureCheck.allowed) {
+                return {
+                    success: false,
+                    error: `AI recreate limit reached (${featureCheck.used} / ${featureCheck.limit} this month). Upgrade for higher limits.`,
                 };
             }
 
@@ -1176,6 +1188,15 @@ export async function analyzeResumePdf(
             return {
                 success: false,
                 error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
+            };
+        }
+
+        // 2b. Check per-feature monthly limit
+        const featureCheck = await checkFeatureLimit(userId, "analyze");
+        if (!featureCheck.allowed) {
+            return {
+                success: false,
+                error: `AI analyze limit reached (${featureCheck.used} / ${featureCheck.limit} this month). Upgrade for higher limits.`,
             };
         }
 
@@ -1712,7 +1733,7 @@ export async function saveCoverLetter(values: CoverLetterValues) {
             ...data,
             updatedAt: new Date(),
         })
-        .where(eq(coverLetters.id, id));
+        .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, session.user.id)));
 
     return { success: true };
 }
@@ -1734,7 +1755,7 @@ export async function deleteCoverLetter(coverLetterId: string) {
         return { error: "Cover letter not found." };
     }
 
-    await db.delete(coverLetters).where(eq(coverLetters.id, coverLetterId));
+    await db.delete(coverLetters).where(and(eq(coverLetters.id, coverLetterId), eq(coverLetters.userId, session.user.id)));
 
     revalidatePath("/dashboard/cover-letters");
 }
