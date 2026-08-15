@@ -1,3 +1,12 @@
+/**
+ * File Storage — Turso/base64 approach.
+ *
+ * Files are stored as base64-encoded strings in the `user_files.file_data` column.
+ * Tradeoff: simplicity (no external blob storage) vs. row size limits (~4.5MB on Vercel).
+ * The `r2Key` column name is a legacy artifact from a planned R2 migration that was
+ * never completed. It now stores a logical key for the Turso-stored file.
+ */
+
 import { getDb } from "@/db";
 import { userFiles } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
