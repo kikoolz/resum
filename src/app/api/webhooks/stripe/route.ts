@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripe, isLifetimePriceId } from "@/lib/stripe";
 import { getDb } from "@/db";
 import { userSubscriptions, processedStripeEvents } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, lt } from "drizzle-orm";
 import { grantReferralReward } from "@/lib/referrals";
 import Stripe from "stripe";
 
@@ -47,10 +47,12 @@ export async function POST(req: NextRequest) {
       createdAt: now,
     });
   } catch (insertErr: any) {
+    // Drizzle wraps the driver error in `cause`; check both levels.
+    const errCode = insertErr?.cause?.code ?? insertErr?.code;
+    const errMsg = insertErr?.cause?.message ?? insertErr?.message ?? "";
     const isUniqueViolation =
-      insertErr?.code === "SQLITE_CONSTRAINT" ||
-      insertErr?.message?.includes("UNIQUE constraint failed") ||
-      insertErr?.message?.includes("unique constraint");
+      errCode === "SQLITE_CONSTRAINT" ||
+      errMsg.includes("UNIQUE constraint failed");
 
     if (!isUniqueViolation) {
       // Transient DB error — let Stripe retry
@@ -61,37 +63,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Row exists — check its status and age
-    const [existing] = await db
-      .select()
-      .from(processedStripeEvents)
-      .where(eq(processedStripeEvents.eventId, event.id))
-      .limit(1);
-
-    if (!existing) {
-      // Race: row vanished between insert failure and select — treat as duplicate
-      console.log(`[Webhook] Skipping event ${event.id} (row vanished)`);
-      return NextResponse.json({ received: true });
-    }
-
-    if (existing.status === "completed") {
-      console.log(`[Webhook] Skipping completed event ${event.id}`);
-      return NextResponse.json({ received: true });
-    }
-
-    // status = "pending" — another instance is processing or crashed
-    const age = now - (existing.createdAt ?? 0);
-    if (age < PENDING_ABANDONMENT_MS) {
-      console.log(`[Webhook] Skipping in-progress event ${event.id} (${age}ms old)`);
-      return NextResponse.json({ received: true });
-    }
-
-    // Stale pending row — reclaim it
-    console.log(`[Webhook] Reclaiming stale event ${event.id} (${age}ms old)`);
-    await db
+    // Row exists — try an atomic reclaim: only update if pending and stale.
+    // If 0 rows affected, another instance already claimed or completed it.
+    const staleThreshold = now - PENDING_ABANDONMENT_MS;
+    const result = await db
       .update(processedStripeEvents)
       .set({ createdAt: now })
-      .where(eq(processedStripeEvents.eventId, event.id));
+      .where(
+        and(
+          eq(processedStripeEvents.eventId, event.id),
+          eq(processedStripeEvents.status, "pending"),
+          lt(processedStripeEvents.createdAt, staleThreshold),
+        ),
+      );
+
+    if (result.rowsAffected === 0) {
+      // Either completed, or pending and not yet stale — skip
+      console.log(`[Webhook] Skipping event ${event.id} (not reclaimable)`);
+      return NextResponse.json({ received: true });
+    }
+
+    // Reclaim succeeded — fall through to process
+    console.log(`[Webhook] Reclaimed stale event ${event.id}`);
   }
 
   // --- Process the event -----------------------------------------------
