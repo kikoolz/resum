@@ -637,9 +637,11 @@ export const processedStripeEvents = sqliteTable(
         id: integer("id").primaryKey({ autoIncrement: true }),
         eventId: text("event_id").notNull().unique(),
         eventType: text("event_type"),
-        processedAt: integer("processed_at")
+        status: text("status").notNull().default("pending"), // "pending" | "completed"
+        createdAt: integer("created_at")
             .notNull()
             .default(sql`(cast((julianday('now') - 2440587.5) * 86400000 as integer))`),
+        completedAt: integer("completed_at"),
     },
 );
 
