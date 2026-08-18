@@ -362,13 +362,13 @@ export const sampleTemplates: SampleTemplate[] = [
       ],
       workExperiences: [
         {
-          position: "Product Manager",
-          company: "Technite Gmbh",
-          startDate: "2018-08-01",
-          endDate: "2023-07-01",
+          position: "Senior Product Manager",
+          company: "Zalando SE",
+          startDate: "2023-08-01",
+          endDate: undefined,
           location: "Berlin, Germany",
           description:
-            "• Led a cross-functional team of 10 people in the development of a new product line, resulting in a 20% increase in revenue\n• Conducted market analysis and competitive studies to identify new product opportunities and expand the product portfolio\n• Successfully launched two new products in the market, leading to a 15% increase in market share",
+            "• Spearheaded the checkout redesign project, improving conversion rates by 12% across 6 European markets\n• Managed a squad of 8 engineers and 2 designers, delivering quarterly OKRs on time and under budget\n• Introduced data-driven prioritization using A/B testing, reducing feature cycle time by 30%",
           visible: true,
         },
         {
@@ -662,13 +662,13 @@ export const sampleTemplates: SampleTemplate[] = [
         },
 
         {
-          position: "Junior Web Designer",
-          company: "The First Tech Startup ABC",
-          location: "New York, NY",
-          startDate: "2017-09-01",
-          endDate: "2019-09-01",
+          position: "UI/UX Design Intern",
+          company: "Pixel & Co Studio",
+          location: "Brooklyn, NY",
+          startDate: "2019-10-01",
+          endDate: "2020-06-01",
           description:
-            "• Assisted senior designers in creating website layouts, graphics, and interactive elements for startup projects.\n• Built wireframes and prototypes using tools like Sketch and Adobe XD, helping clients visualize final website designs.",
+            "• Supported the design team in creating wireframes, mood boards, and high-fidelity mockups for client branding projects.\n• Conducted user research interviews and compiled findings into actionable design recommendations.",
           visible: true,
         },
 
@@ -737,19 +737,21 @@ export const sampleTemplates: SampleTemplate[] = [
       skills: ["Model", "Runway Walk", "Adaptability", "Posing & Movement"],
       workExperiences: [
         {
-          position: "Runway Model",
-          company: "Salford & Co.",
-          location: "New York",
-          startDate: "2015-09-01",
+          position: "Commercial Print Model",
+          company: "Vogue Italia / Elite Model Management",
+          location: "Milan, Italy",
+          startDate: "2013-03-01",
+          endDate: "2015-06-01",
           description:
-            "• Walked for renowned designers during New York Fashion Week, showcasing seasonal collections.\n• Collaborated closely with stylists and makeup artists to achieve the desired runway look, contributing to cohesive show presentations.",
+            "• Featured in editorial spreads for Vogue Italia and Harper's Bazaar, building a portfolio of high-fashion print work.\n• Participated in castings and fittings for major fashion houses including Prada and Valentino.",
           visible: true,
         },
         {
           position: "Runway Model",
           company: "Salford & Co.",
           location: "New York",
-          startDate: "2013-09-01",
+          startDate: "2015-09-01",
+          endDate: undefined,
           description:
             "• Walked for renowned designers during New York Fashion Week, showcasing seasonal collections.\n• Collaborated closely with stylists and makeup artists to achieve the desired runway look, contributing to cohesive show presentations.",
           visible: true,
@@ -890,23 +892,23 @@ export const sampleTemplates: SampleTemplate[] = [
           visible: true,
         },
         {
-          position: "Social media marketing specialist",
+          position: "Social Media Marketing Specialist",
           company: "DigitalX",
           location: "New York",
-          startDate: "2023-04-01",
-          endDate: "2019-08-01",
+          startDate: "2019-09-01",
+          endDate: "2023-03-01",
           description:
             "• Developed and executed successful social media campaigns across multiple platforms to increase brand awareness and drive traffic to the company's website.\n• Managed and grew the company's social media accounts by creating engaging content, monitoring analytics, and implementing social media best practices.",
           visible: true,
         },
         {
-          position: "Social media marketing specialist",
-          company: "DigitalX",
+          position: "Content Marketing Coordinator",
+          company: "Brightwave Media",
           location: "New York",
-          startDate: "2023-04-01",
+          startDate: "2017-06-01",
           endDate: "2019-08-01",
           description:
-            "• Developed and executed successful social media campaigns across multiple platforms to increase brand awareness and drive traffic to the company's website.\n• Managed and grew the company's social media accounts by creating engaging content, monitoring analytics, and implementing social media best practices.",
+            "• Created and scheduled daily social media posts across Instagram, Twitter, and LinkedIn, growing follower count by 40% in one year.\n• Wrote SEO-optimized blog articles and email newsletters that increased organic traffic by 25%.",
           visible: true,
         },
       ],
