@@ -69,7 +69,7 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
     },
     {
       href: "/dashboard/uploads",
-      label: "Uploads",
+      label: "ATS Analyzer",
       icon: FileUp,
       active: pathname === "/dashboard/uploads",
     },
@@ -209,7 +209,7 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/uploads">
                   <FileUp className="mr-2 h-4 w-4" />
-                  Uploads
+                  ATS Analyzer
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>

@@ -37,10 +37,10 @@ export default async function UploadsPage() {
                     Manage
                 </div>
                 <h1 className="text-2xl font-bold font-heading tracking-tight">
-                    Uploads
+                    ATS Analyzer
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                    Upload PDF resumes to extract and analyze with AI.
+                    Upload PDF resumes to analyze ATS compatibility and extract insights with AI.
                 </p>
             </div>
 
