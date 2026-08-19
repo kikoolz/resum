@@ -19,7 +19,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/groq": "^4.0.28",
+    "@ai-sdk/groq": "^3.0.60",
     "@base-ui/react": "^1.2.0",
     "@floating-ui/react": "^0.27.20",
     "@hookform/resolvers": "^5.2.2",
