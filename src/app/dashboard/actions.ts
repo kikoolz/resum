@@ -636,8 +636,9 @@ export async function deleteFile(
 async function getPdfDataForAi(
     userId: string,
     fileId: string,
-): Promise<{ dataUrl: string; fileName: string }> {
+): Promise<{ text: string; fileName: string }> {
     const db = await getDb();
+    const { PDFParse } = await import("pdf-parse");
 
     const file = await db.query.userFiles.findFirst({
         where: and(
@@ -652,9 +653,14 @@ async function getPdfDataForAi(
         throw new Error("PDF file not found");
     }
 
-    // File data is already stored as base64 in Turso
-    const dataUrl = `data:application/pdf;base64,${file.fileData}`;
-    return { dataUrl, fileName: file.fileName };
+    // Decode base64 to buffer, then extract text
+    const base64Data = file.fileData.replace(/^data:.*?;base64,/, "");
+    const buffer = Buffer.from(base64Data, "base64");
+    const pdfParser = new PDFParse({ data: buffer });
+    const parsed = await pdfParser.getText();
+    await pdfParser.destroy();
+
+    return { text: parsed.text, fileName: file.fileName };
 }
 
 async function getCachedAiResult(
@@ -742,8 +748,8 @@ export async function recreateResumeFromPdf(
         if (cached) {
             extraction = cached as AiResumeExtraction;
         } else {
-            // 3. Get a temporary presigned URL for the PDF
-            const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
+            // 3. Extract text from the PDF
+            const { text: pdfText, fileName } = await getPdfDataForAi(userId, fileId);
 
             // 4. Call AI for structured extraction (Groq Llama 3.3 70B)
             const { output, usage } = await generateTextWithFallback({
@@ -822,15 +828,13 @@ Resumes come in many layouts. Handle each correctly:
                 messages: [
                     {
                         role: "user",
-                        content: [
-                            {
-                                type: "file",
-                                data: pdfDataUrl,
-                                mediaType: "application/pdf",
-                            },
-                            {
-                                type: "text",
-                                text: `Extract all structured data from this resume PDF ("${fileName}").
+                        content: `Extract all structured data from this resume ("${fileName}").
+
+Here is the resume text:
+
+---
+${pdfText}
+---
 
 Here is an example of the expected output format for a work experience entry:
 {
@@ -856,8 +860,6 @@ And for an education entry:
 }
 
 Extract EVERY section you can find: personal info, summary/objective, work experience, education, projects, skills, awards, publications, certificates, languages, courses, references, and interests. Do not skip any content — even small sections like hobbies or volunteer work should be captured in the appropriate field.`,
-                            },
-                        ],
                     },
                 ],
                 maxRetries: 2,
@@ -1195,8 +1197,8 @@ export async function analyzeResumePdf(
             }
         }
 
-        // 3. Get a temporary presigned URL for the PDF
-        const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
+        // 3. Extract text from the PDF
+        const { text: pdfText, fileName } = await getPdfDataForAi(userId, fileId);
 
         // 4. Call AI for analysis (Groq Llama 3.3 70B)
         const { output, usage } = await generateTextWithFallback({
@@ -1275,15 +1277,13 @@ Your feedback must be:
             messages: [
                 {
                     role: "user",
-                    content: [
-                        {
-                            type: "file",
-                            data: pdfDataUrl,
-                            mediaType: "application/pdf",
-                        },
-                        {
-                            type: "text",
-                            text: `Perform a comprehensive, no-holds-barred analysis of this resume ("${fileName}").
+                    content: `Perform a comprehensive, no-holds-barred analysis of this resume ("${fileName}").
+
+Here is the resume text:
+
+---
+${pdfText}
+---
 
 For each section that exists in the resume, provide:
 1. A score from 0-100 (calibrated to the scoring guidelines)
@@ -1308,8 +1308,6 @@ Finally provide:
 - **Top strengths:** 3-5 specific things this resume does well (cite actual content)
 - **Critical improvements:** 3-5 highest-impact changes ranked by importance (most impactful first)
 - **Overall summary:** 2-3 sentences capturing your honest assessment — imagine you're giving this feedback face-to-face to the candidate`,
-                        },
-                    ],
                 },
             ],
             maxRetries: 2,
