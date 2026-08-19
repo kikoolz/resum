@@ -638,6 +638,7 @@ async function getPdfDataForAi(
     fileId: string,
 ): Promise<{ text: string; fileName: string }> {
     const db = await getDb();
+    const { CanvasFactory } = await import("pdf-parse/worker");
     const { PDFParse } = await import("pdf-parse");
 
     const file = await db.query.userFiles.findFirst({
@@ -656,7 +657,7 @@ async function getPdfDataForAi(
     // Decode base64 to buffer, then extract text
     const base64Data = file.fileData.replace(/^data:.*?;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
-    const pdfParser = new PDFParse({ data: buffer });
+    const pdfParser = new PDFParse({ data: buffer, CanvasFactory });
     const parsed = await pdfParser.getText();
     await pdfParser.destroy();
 
