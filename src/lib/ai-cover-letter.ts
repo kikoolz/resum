@@ -1,10 +1,11 @@
 "use server";
 
 import { generateText } from "ai";
-import { getAiModel } from "@/lib/ai";
+import { getAiModelWithFallback } from "@/lib/ai";
 import { requireSession } from "@/lib/auth-server";
 import { logAiUsage, checkAiUsageLimit } from "@/lib/ai-usage";
 import { isPremiumUser } from "@/lib/subscription";
+import { log } from "@/lib/logger";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -174,17 +175,39 @@ export async function generateCoverLetter(
         const tone = input.tone || "professional";
         const systemPrompt = buildSystemPrompt(tone);
         const userMessage = buildUserMessage(input);
-        const model = getAiModel();
+        const models = getAiModelWithFallback();
+        let lastError: Error | null = null;
+        let text = "";
+        let usage;
 
-        const { text, usage } = await generateText({
-            model,
-            system: systemPrompt,
-            messages: [{ role: "user", content: userMessage }],
-            maxRetries: 2,
-        });
+        for (const model of models) {
+            try {
+                const result = await generateText({
+                    model,
+                    system: systemPrompt,
+                    messages: [{ role: "user", content: userMessage }],
+                    maxRetries: 2,
+                });
+                text = result.text;
+                usage = result.usage;
+                break;
+            } catch (err: any) {
+                lastError = err;
+                const isRateLimit =
+                    err?.statusCode === 429 ||
+                    err?.message?.includes("RESOURCE_EXHAUSTED") ||
+                    err?.message?.includes("rate limit");
+                if (!isRateLimit) throw err;
+                log.warn("Model rate-limited, trying fallback", { error: err?.message });
+            }
+        }
+
+        if (!text && lastError) throw lastError;
 
         // Log token usage
-        await logAiUsage(userId, usage, "cover_letter");
+        if (usage) {
+            await logAiUsage(userId, usage, "cover_letter");
+        }
 
         const trimmed = text.trim();
         if (!trimmed) {

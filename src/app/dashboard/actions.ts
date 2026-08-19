@@ -23,7 +23,7 @@ import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
-import { getAiModel, MODEL_ID } from "@/lib/ai";
+import { getAiModel, getAiModelWithFallback, MODEL_ID, FALLBACK_MODEL_ID } from "@/lib/ai";
 import { logAiUsage, checkAiUsageLimit, checkFeatureLimit } from "@/lib/ai-usage";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import { log } from "@/lib/logger";
@@ -33,6 +33,38 @@ import {
     type AiResumeExtraction,
     type AiResumeAnalysis,
 } from "@/lib/ai-schemas";
+
+// ---------------------------------------------------------------------------
+// AI model fallback helper — tries Gemini first, then Groq if rate-limited
+// ---------------------------------------------------------------------------
+async function generateTextWithFallback(
+    params: Omit<Parameters<typeof generateText>[0], "model">,
+): Promise<Awaited<ReturnType<typeof generateText>>> {
+    const models = getAiModelWithFallback();
+    let lastError: Error | null = null;
+
+    for (const model of models) {
+        try {
+            return await generateText({ ...params, model } as Parameters<typeof generateText>[0]);
+        } catch (err: any) {
+            lastError = err;
+            const isRateLimit =
+                err?.statusCode === 429 ||
+                err?.message?.includes("RESOURCE_EXHAUSTED") ||
+                err?.message?.includes("rate limit") ||
+                err?.message?.includes("quota");
+
+            if (!isRateLimit) throw err;
+
+            log.warn("Model rate-limited, trying fallback", {
+                model: String(model),
+                error: err?.message,
+            });
+        }
+    }
+
+    throw lastError || new Error("All AI models failed");
+}
 
 // ---------------------------------------------------------------------------
 // Create a new resume and redirect to the editor
@@ -731,10 +763,8 @@ export async function recreateResumeFromPdf(
             // 3. Get a temporary presigned URL for the PDF
             const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
 
-            // 4. Call Gemini via AI Gateway for structured extraction
-            const model = await getAiModel();
-            const { output, usage } = await generateText({
-                model,
+            // 4. Call AI for structured extraction (Gemini primary, Groq fallback)
+            const { output, usage } = await generateTextWithFallback({
                 output: Output.object({
                     schema: aiResumeExtractionSchema,
                 }),
@@ -1204,10 +1234,8 @@ export async function analyzeResumePdf(
         // 3. Get a temporary presigned URL for the PDF
         const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
 
-        // 4. Call Gemini for analysis via generateText + Output.object
-        const model = await getAiModel();
-        const { output, usage } = await generateText({
-            model,
+        // 4. Call AI for analysis (Gemini primary, Groq fallback)
+        const { output, usage } = await generateTextWithFallback({
             output: Output.object({
                 schema: aiResumeAnalysisSchema,
             }),
@@ -1591,10 +1619,8 @@ ${resumeContext}
 
 Remember: output ONLY the raw HTML file, nothing else. Every word of content must come from the resume data above.`;
 
-        // 5. Call Gemini 3.1 Pro via AI Gateway
-        const model = await getAiModel();
-        const { text, usage } = await generateText({
-            model,
+        // 5. Call AI (Gemini primary, Groq fallback)
+        const { text, usage } = await generateTextWithFallback({
             system: systemPrompt,
             prompt: userPrompt,
             maxOutputTokens: 32000,
