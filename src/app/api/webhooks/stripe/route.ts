@@ -4,6 +4,7 @@ import { getDb } from "@/db";
 import { userSubscriptions, processedStripeEvents } from "@/db/schema";
 import { eq, and, lt } from "drizzle-orm";
 import { grantReferralReward } from "@/lib/referrals";
+import { log } from "@/lib/logger";
 import Stripe from "stripe";
 
 // Disable body parsing — Stripe needs the raw body for signature verification
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
       process.env.STRIPE_WEBHOOK_SECRET!,
     );
   } catch (err) {
-    console.error("[Webhook] Signature verification failed:", err);
+    log.error("Webhook signature verification failed", { error: String(err) });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     if (!isUniqueViolation) {
       // Transient DB error — let Stripe retry
-      console.error(`[Webhook] Failed to claim event ${event.id}:`, insertErr);
+      log.error("Failed to claim webhook event", { eventId: event.id, error: String(insertErr) });
       return NextResponse.json(
         { error: "Failed to record event" },
         { status: 500 },
@@ -79,12 +80,12 @@ export async function POST(req: NextRequest) {
 
     if (result.rowsAffected === 0) {
       // Either completed, or pending and not yet stale — skip
-      console.log(`[Webhook] Skipping event ${event.id} (not reclaimable)`);
+      log.info("Skipping non-reclaimable webhook event", { eventId: event.id });
       return NextResponse.json({ received: true });
     }
 
     // Reclaim succeeded — fall through to process
-    console.log(`[Webhook] Reclaimed stale event ${event.id}`);
+    log.info("Reclaimed stale webhook event", { eventId: event.id });
   }
 
   // --- Process the event -----------------------------------------------
@@ -121,7 +122,7 @@ export async function POST(req: NextRequest) {
           try {
             await grantReferralReward(userId);
           } catch (err) {
-            console.error("[Webhook] Failed to grant referral reward:", err);
+            log.error("Failed to grant referral reward", { userId, error: String(err) });
           }
 
           break;
@@ -148,7 +149,7 @@ export async function POST(req: NextRequest) {
         try {
           await grantReferralReward(userId);
         } catch (err) {
-          console.error("[Webhook] Failed to grant referral reward:", err);
+          log.error("Failed to grant referral reward", { userId, error: String(err) });
         }
 
         break;
@@ -258,7 +259,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error(`[Webhook] Error handling ${event.type}:`, error);
+    log.error("Webhook handler failed", { eventType: event.type, error: String(error) });
     // Leave status as "pending" — a retry can reclaim it after PENDING_ABANDONMENT_MS
     return NextResponse.json(
       { error: "Webhook handler failed" },

@@ -26,6 +26,7 @@ import { generateText, Output, NoObjectGeneratedError } from "ai";
 import { getAiModel, MODEL_ID } from "@/lib/ai";
 import { logAiUsage, checkAiUsageLimit, checkFeatureLimit } from "@/lib/ai-usage";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
+import { log } from "@/lib/logger";
 import {
     aiResumeExtractionSchema,
     aiResumeAnalysisSchema,
@@ -553,7 +554,7 @@ export async function saveResume(
 
         return { success: true };
     } catch (err) {
-        console.error("[saveResume] Unexpected error:", err);
+        log.error("saveResume failed", { error: String(err) });
         return {
             success: false,
             error: "An unexpected error occurred while saving",
@@ -587,7 +588,7 @@ export async function deleteFile(
 
         return { success: true };
     } catch (err) {
-        console.error("[deleteFile] error:", err);
+        log.error("deleteFile failed", { error: String(err) });
         return { success: false, error: "Failed to delete file" };
     }
 }
@@ -863,7 +864,7 @@ Extract EVERY section you can find: personal info, summary/objective, work exper
             try {
                 await logAiUsage(userId, usage, "recreate");
             } catch (logErr) {
-                console.error("[recreateResumeFromPdf] Failed to log AI usage:", logErr);
+                log.error("Failed to log AI usage", { error: String(logErr) });
             }
 
             // 6. Cache the extraction result
@@ -1146,7 +1147,7 @@ Extract EVERY section you can find: personal info, summary/objective, work exper
 
         return { success: true, resumeId };
     } catch (err) {
-        console.error("[recreateResumeFromPdf] error:", err);
+        log.error("recreateResumeFromPdf failed", { error: String(err) });
         if (NoObjectGeneratedError.isInstance(err)) {
             return {
                 success: false,
@@ -1335,7 +1336,7 @@ Finally provide:
         try {
             await logAiUsage(userId, usage, "analyze");
         } catch (logErr) {
-            console.error("[analyzeResumePdf] Failed to log AI usage:", logErr);
+            log.error("Failed to log AI usage", { error: String(logErr) });
         }
 
         // 6. Cache the result (delete old cache first on forceRefresh)
@@ -1361,7 +1362,7 @@ Finally provide:
 
         return { success: true, analysis };
     } catch (err) {
-        console.error("[analyzeResumePdf] error:", err);
+        log.error("analyzeResumePdf failed", { error: String(err) });
         if (NoObjectGeneratedError.isInstance(err)) {
             return {
                 success: false,
@@ -1616,12 +1617,12 @@ Remember: output ONLY the raw HTML file, nothing else. Every word of content mus
         try {
             await logAiUsage(userId, usage, "portfolio");
         } catch (logErr) {
-            console.error("[generatePortfolioFromResume] Failed to log AI usage:", logErr);
+            log.error("Failed to log AI usage", { error: String(logErr) });
         }
 
         return { success: true, html };
     } catch (err) {
-        console.error("[generatePortfolioFromResume] error:", err);
+        log.error("generatePortfolioFromResume failed", { error: String(err) });
         return {
             success: false,
             error:
