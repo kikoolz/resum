@@ -23,8 +23,8 @@ import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generateText, Output, NoObjectGeneratedError } from "ai";
-import { getAiModel, getAiModelWithFallback, MODEL_ID, FALLBACK_MODEL_ID } from "@/lib/ai";
-import { logAiUsage, checkAiUsageLimit, checkFeatureLimit } from "@/lib/ai-usage";
+import { getAiModel, getAiModelWithFallback, MODEL_ID } from "@/lib/ai";
+import { logAiUsage } from "@/lib/ai-usage";
 import { canCreateResume, PLAN_LIMITS, getUserTier } from "@/lib/subscription";
 import { log } from "@/lib/logger";
 import {
@@ -742,28 +742,10 @@ export async function recreateResumeFromPdf(
         if (cached) {
             extraction = cached as AiResumeExtraction;
         } else {
-            // 2. Check AI usage limit
-            const usageCheck = await checkAiUsageLimit(userId);
-            if (!usageCheck.allowed) {
-                return {
-                    success: false,
-                    error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
-                };
-            }
-
-            // 2b. Check per-feature monthly limit
-            const featureCheck = await checkFeatureLimit(userId, "recreate");
-            if (!featureCheck.allowed) {
-                return {
-                    success: false,
-                    error: `AI recreate limit reached (${featureCheck.used} / ${featureCheck.limit} this month). Upgrade for higher limits.`,
-                };
-            }
-
             // 3. Get a temporary presigned URL for the PDF
             const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
 
-            // 4. Call AI for structured extraction (Gemini primary, Groq fallback)
+            // 4. Call AI for structured extraction (Groq Llama 3.3 70B)
             const { output, usage } = await generateTextWithFallback({
                 output: Output.object({
                     schema: aiResumeExtractionSchema,
@@ -1213,28 +1195,10 @@ export async function analyzeResumePdf(
             }
         }
 
-        // 2. Check AI usage limit
-        const usageCheck = await checkAiUsageLimit(userId);
-        if (!usageCheck.allowed) {
-            return {
-                success: false,
-                error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
-            };
-        }
-
-        // 2b. Check per-feature monthly limit
-        const featureCheck = await checkFeatureLimit(userId, "analyze");
-        if (!featureCheck.allowed) {
-            return {
-                success: false,
-                error: `AI analyze limit reached (${featureCheck.used} / ${featureCheck.limit} this month). Upgrade for higher limits.`,
-            };
-        }
-
         // 3. Get a temporary presigned URL for the PDF
         const { dataUrl: pdfDataUrl, fileName } = await getPdfDataForAi(userId, fileId);
 
-        // 4. Call AI for analysis (Gemini primary, Groq fallback)
+        // 4. Call AI for analysis (Groq Llama 3.3 70B)
         const { output, usage } = await generateTextWithFallback({
             output: Output.object({
                 schema: aiResumeAnalysisSchema,
@@ -1418,15 +1382,6 @@ export async function generatePortfolioFromResume(
         const session = await requireSession();
         const userId = session.user.id;
         const db = await getDb();
-
-        // 1. Check AI usage limit
-        const usageCheck = await checkAiUsageLimit(userId);
-        if (!usageCheck.allowed) {
-            return {
-                success: false,
-                error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
-            };
-        }
 
         // 2. Auth + ownership check — load full resume with all relations
         const resume = await db.query.resumes.findFirst({

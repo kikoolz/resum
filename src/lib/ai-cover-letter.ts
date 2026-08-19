@@ -3,7 +3,7 @@
 import { generateText } from "ai";
 import { getAiModelWithFallback } from "@/lib/ai";
 import { requireSession } from "@/lib/auth-server";
-import { logAiUsage, checkAiUsageLimit } from "@/lib/ai-usage";
+import { logAiUsage } from "@/lib/ai-usage";
 import { isPremiumUser } from "@/lib/subscription";
 import { log } from "@/lib/logger";
 
@@ -160,15 +160,6 @@ export async function generateCoverLetter(
             return {
                 success: false,
                 error: "Cover letter generation is a Pro feature. Upgrade to access AI-powered cover letters.",
-            };
-        }
-
-        // Check AI usage limit
-        const usageCheck = await checkAiUsageLimit(userId);
-        if (!usageCheck.allowed) {
-            return {
-                success: false,
-                error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
             };
         }
 

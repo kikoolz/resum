@@ -3,7 +3,7 @@
 import { generateText } from "ai";
 import { getAiModelWithFallback } from "@/lib/ai";
 import { requireSession } from "@/lib/auth-server";
-import { logAiUsage, checkAiUsageLimit } from "@/lib/ai-usage";
+import { logAiUsage } from "@/lib/ai-usage";
 import { log } from "@/lib/logger";
 
 // ---------------------------------------------------------------------------
@@ -144,15 +144,6 @@ export async function enhanceResumeField(
     try {
         const session = await requireSession();
         const userId = session.user.id;
-
-        // Check AI usage limit
-        const usageCheck = await checkAiUsageLimit(userId);
-        if (!usageCheck.allowed) {
-            return {
-                success: false,
-                error: `AI usage limit reached (${usageCheck.used.toLocaleString()} / ${usageCheck.limit.toLocaleString()} tokens this month). Upgrade to premium for unlimited access.`,
-            };
-        }
 
         const systemPrompt = SECTION_PROMPTS[input.fieldType];
         if (!systemPrompt) {
