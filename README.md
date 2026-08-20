@@ -1,6 +1,25 @@
+<div align="center">
+
 # Resum
 
 AI-powered resume builder SaaS. Build, enhance, analyze, and export professional resumes with AI assistance.
+
+<br/>
+
+<table>
+  <tr>
+    <td align="center">
+      <strong>🌙 Dark Mode</strong><br/>
+      <img src="docs/images/hero-dark.png" alt="Resum Dark Mode" width="100%"/>
+    </td>
+    <td align="center">
+      <strong>☀️ Light Mode</strong><br/>
+      <img src="docs/images/hero-light.png" alt="Resum Light Mode" width="100%"/>
+    </td>
+  </tr>
+</table>
+
+</div>
 
 ## Tech Stack
 
