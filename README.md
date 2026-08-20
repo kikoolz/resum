@@ -129,11 +129,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Database Schema
 
-21 tables across auth and application data:
+22 tables across auth and application data:
 
 **Auth:** `users`, `sessions`, `accounts`, `verifications`
 
-**Application:** `resumes`, `work_experiences`, `educations`, `projects`, `awards`, `publications`, `certificates`, `languages`, `courses`, `resume_references`, `interests`, `cover_letters`, `user_subscriptions`, `user_files`, `ai_results`, `ai_usage_logs`, `referrals`
+**Application:** `resumes`, `work_experiences`, `educations`, `projects`, `awards`, `publications`, `certificates`, `languages`, `courses`, `resume_references`, `interests`, `cover_letters`, `user_subscriptions`, `user_files`, `ai_results`, `ai_usage_logs`, `referrals`, `processed_stripe_events`
 
 ## Project Structure
 
@@ -149,16 +149,23 @@ src/
 │   │   ├── uploads/         # PDF upload & AI extraction
 │   │   ├── profile/         # User profile
 │   │   └── referrals/       # Referral program
+│   ├── forgot-password/     # Password recovery
+│   ├── reset-password/      # Password reset
 │   ├── privacy/             # Privacy policy
 │   └── terms/               # Terms of service
 ├── auth/                    # Better Auth configuration
 ├── components/
 │   ├── landing/             # Landing page sections
-│   ├── tiptap-*/            # TipTap editor components
+│   ├── tiptap-extension/    # Custom TipTap extensions
+│   ├── tiptap-icons/        # Icons for TipTap editor
+│   ├── tiptap-node/         # Custom TipTap node types
+│   ├── tiptap-templates/    # TipTap template rendering
+│   ├── tiptap-ui/           # Higher-level TipTap UI components
+│   ├── tiptap-ui-primitive/ # Low-level TipTap UI primitives
 │   └── ui/                  # shadcn/ui components (57)
 ├── db/
 │   ├── index.ts             # Turso database client
-│   ├── schema.ts            # Application schema (17 tables)
+│   ├── schema.ts            # Application schema (18 tables)
 │   └── auth.schema.ts       # Auth schema (4 tables)
 ├── hooks/                   # 12 custom React hooks
 ├── lib/                     # Utilities (AI, auth, stripe, storage, etc.)
