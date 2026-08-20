@@ -59,7 +59,6 @@
     "lucide-react": "^0.564.0",
     "next": "^16.2.12",
     "next-themes": "^0.4.6",
-    "pdfjs-dist": "^4.0.379",
     "radix-ui": "^1.4.3",
     "react": "19.1.5",
     "react-day-picker": "^9.13.2",
@@ -73,6 +72,7 @@
     "sonner": "^2.0.7",
     "stripe": "^22.3.2",
     "tailwind-merge": "^3.4.0",
+    "unpdf": "^1.8.1",
     "vaul": "^1.1.2",
     "zod": "^4.3.6"
   },

@@ -638,6 +638,7 @@ async function getPdfDataForAi(
     fileId: string,
 ): Promise<{ text: string; fileName: string }> {
     const db = await getDb();
+    const { extractText, getDocumentProxy } = await import("unpdf");
 
     const file = await db.query.userFiles.findFirst({
         where: and(
@@ -653,19 +654,10 @@ async function getPdfDataForAi(
     }
 
     const base64Data = file.fileData.replace(/^data:.*?;base64,/, "");
-    const buffer = Buffer.from(base64Data, "base64");
-
-    const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-    const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
-
-    let fullText = "";
-    for (let i = 1; i <= doc.numPages; i++) {
-        const page = await doc.getPage(i);
-        const content = await page.getTextContent();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const pageText = (content.items as any[]).map((item: any) => item.str ?? "").join(" ");
-        fullText += pageText + "\n";
-    }
+    const buffer = new Uint8Array(Buffer.from(base64Data, "base64"));
+    const doc = await getDocumentProxy(buffer);
+    const result = await extractText(doc);
+    const fullText = result.text.join("\n");
 
     return { text: fullText, fileName: file.fileName };
 }
