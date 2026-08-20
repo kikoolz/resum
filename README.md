@@ -47,6 +47,7 @@ AI-powered resume builder SaaS. Build, enhance, analyze, and export professional
 - Public portfolio endpoint at `/api/portfolio/[resumeId]`
 - SEO: robots.txt, sitemap.xml, OpenGraph meta tags
 - Photo cropping with circular cropper for profile photos
+- Tooltip labels on action buttons for improved usability
 
 ## Getting Started
 
