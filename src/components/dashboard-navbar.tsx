@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import {
-  FileUp,
+  ShieldCheck,
   LogOut,
   User,
   CreditCard,
@@ -70,7 +70,7 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
     {
       href: "/dashboard/uploads",
       label: "ATS Analyzer",
-      icon: FileUp,
+      icon: ShieldCheck,
       active: pathname === "/dashboard/uploads",
     },
     {
@@ -208,7 +208,7 @@ export function DashboardNavbar({ user }: DashboardNavbarProps) {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/uploads">
-                  <FileUp className="mr-2 h-4 w-4" />
+                  <ShieldCheck className="mr-2 h-4 w-4" />
                   ATS Analyzer
                 </Link>
               </DropdownMenuItem>
