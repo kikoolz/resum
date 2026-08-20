@@ -6,6 +6,10 @@ AI-powered resume builder SaaS. Build, enhance, analyze, and export professional
 
 <br/>
 
+**[View Interactive Dark/Light Mode Slider →](https://kikoolz.github.io/resum/)**
+
+<br/>
+
 <table>
   <tr>
     <td align="center">

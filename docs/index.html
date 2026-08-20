@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resum - Dark/Light Mode Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: #fff;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            color: #888;
+            margin-bottom: 2rem;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            cursor: ew-resize;
+            user-select: none;
+        }
+
+        .slider-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .image-light {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-light img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slider-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: #10b981;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 11;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .slider-handle svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: white;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .labels {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 1rem;
+        }
+
+        .label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        .label-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .label-dot.dark {
+            background: #1f2937;
+        }
+
+        .label-dot.light {
+            background: #f3f4f6;
+        }
+
+        .instructions {
+            margin-top: 2rem;
+            font-size: 0.875rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resum</h1>
+    <p>Drag the slider to compare dark and light modes</p>
+
+    <div class="slider-container" id="slider">
+        <img src="../public/images/hero-dark.png" alt="Dark Mode" id="img-dark">
+        <div class="image-light" id="image-light">
+            <img src="../public/images/hero-light.png" alt="Light Mode">
+        </div>
+        <div class="slider-line" id="slider-line"></div>
+        <div class="slider-handle" id="slider-handle">
+            <svg viewBox="0 0 24 24">
+                <path d="M8 5l-5 7 5 7"/>
+                <path d="M16 5l5 7-5 7"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="labels">
+        <div class="label">
+            <span class="label-dot dark"></span>
+            Dark Mode
+        </div>
+        <div class="label">
+            <span class="label-dot light"></span>
+            Light Mode
+        </div>
+    </div>
+
+    <p class="instructions">Click and drag or use arrow keys to adjust</p>
+
+    <script>
+        const slider = document.getElementById('slider');
+        const imageLight = document.getElementById('image-light');
+        const sliderLine = document.getElementById('slider-line');
+        const sliderHandle = document.getElementById('slider-handle');
+
+        let isDragging = false;
+
+        function updateSlider(x) {
+            const rect = slider.getBoundingClientRect();
+            let percentage = ((x - rect.left) / rect.width) * 100;
+            percentage = Math.max(0, Math.min(100, percentage));
+
+            imageLight.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+            sliderLine.style.left = `${percentage}%`;
+            sliderHandle.style.left = `${percentage}%`;
+        }
+
+        slider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            updateSlider(e.clientX);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                updateSlider(e.clientX);
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        slider.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            updateSlider(e.touches[0].clientX);
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging) {
+                updateSlider(e.touches[0].clientX);
+            }
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const rect = slider.getBoundingClientRect();
+            const currentPercent = parseFloat(sliderHandle.style.left) || 50;
+            let newPercent = currentPercent;
+
+            if (e.key === 'ArrowLeft') {
+                newPercent = Math.max(0, currentPercent - 2);
+            } else if (e.key === 'ArrowRight') {
+                newPercent = Math.min(100, currentPercent + 2);
+            }
+
+            updateSlider(rect.left + (newPercent / 100) * rect.width);
+        });
+    </script>
+</body>
+</html>
