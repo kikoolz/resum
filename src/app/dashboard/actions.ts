@@ -638,7 +638,8 @@ async function getPdfDataForAi(
     fileId: string,
 ): Promise<{ text: string; fileName: string }> {
     const db = await getDb();
-    const pdfParse = (await import("pdf-parse")).default;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const pdfParse = require("pdf-parse");
 
     const file = await db.query.userFiles.findFirst({
         where: and(
