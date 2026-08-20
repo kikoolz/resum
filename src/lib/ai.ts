@@ -15,10 +15,10 @@ function getGroqProvider() {
 }
 
 /**
- * Primary model — Llama 3.3 70B on Groq (free tier).
+ * Primary model — GPT-OSS 120B on Groq (successor to llama-3.3-70b-versatile).
  */
 export function getAiModel(): LanguageModel {
-  return getGroqProvider()("llama-3.3-70b-versatile") as unknown as LanguageModel;
+  return getGroqProvider()("openai/gpt-oss-120b") as unknown as LanguageModel;
 }
 
 /**
@@ -27,9 +27,9 @@ export function getAiModel(): LanguageModel {
 export function getAiModelWithFallback(): LanguageModel[] {
   const groq = getGroqProvider();
   return [
-    groq("llama-3.3-70b-versatile") as unknown as LanguageModel,
-    groq("llama-3.1-8b-instant") as unknown as LanguageModel,
+    groq("openai/gpt-oss-120b") as unknown as LanguageModel,
+    groq("openai/gpt-oss-20b") as unknown as LanguageModel,
   ];
 }
 
-export const MODEL_ID = "llama-3.3-70b-versatile";
+export const MODEL_ID = "openai/gpt-oss-120b";
