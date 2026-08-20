@@ -18,6 +18,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface FileRowProps {
     file: {
@@ -85,103 +91,119 @@ export function FileRow({ file, onAnalyze }: FileRowProps) {
             </div>
 
             <div className="flex shrink-0 items-center gap-1">
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={isDeleting}
-                            title="AI ATS Analysis"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                        >
-                            <BarChart3 className="h-4 w-4" />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent size="sm">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Analyze Resume</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Run AI-powered ATS analysis on <strong>{file.fileName}</strong>? This will use your AI quota.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                                className="cursor-pointer"
-                                onClick={() => onAnalyze(file.id, file.fileName)}
-                            >
-                                Analyze
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <TooltipProvider>
+                <Tooltip>
+                    <AlertDialog>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    disabled={isDeleting}
+                                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+                                >
+                                    <BarChart3 className="h-4 w-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Analyze</TooltipContent>
+                        <AlertDialogContent size="sm">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Analyze Resume</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Run AI-powered ATS analysis on <strong>{file.fileName}</strong>? This will use your AI quota.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    className="cursor-pointer"
+                                    onClick={() => onAnalyze(file.id, file.fileName)}
+                                >
+                                    Analyze
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </Tooltip>
 
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            asChild
-                            disabled={isDeleting}
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
-                        >
-                            <span>
-                                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </span>
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent size="sm">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Download File</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Download <strong>{file.fileName}</strong> ({formatFileSize(file.fileSize)}) to your device?
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                            <AlertDialogAction className="cursor-pointer" asChild>
-                                <a href={file.url} download={file.fileName}>
-                                    Download
-                                </a>
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <Tooltip>
+                    <AlertDialog>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    asChild
+                                    disabled={isDeleting}
+                                    className="h-8 w-8 text-muted-foreground hover:text-foreground cursor-pointer"
+                                >
+                                    <span>
+                                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    </span>
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Download</TooltipContent>
+                        <AlertDialogContent size="sm">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Download File</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Download <strong>{file.fileName}</strong> ({formatFileSize(file.fileSize)}) to your device?
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                <AlertDialogAction className="cursor-pointer" asChild>
+                                    <a href={file.url} download={file.fileName}>
+                                        Download
+                                    </a>
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </Tooltip>
 
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            disabled={isDeleting}
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
-                        >
-                            {isDeleting ? (
-                                <Spinner className="h-4 w-4" />
-                            ) : (
-                                <Trash2 className="h-4 w-4" />
-                            )}
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent size="sm">
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Delete File</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Are you sure you want to delete <strong>{file.fileName}</strong>? This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                                variant="destructive"
-                                className="cursor-pointer"
-                                onClick={handleDelete}
-                            >
-                                Delete
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                <Tooltip>
+                    <AlertDialog>
+                        <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    disabled={isDeleting}
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive cursor-pointer"
+                                >
+                                    {isDeleting ? (
+                                        <Spinner className="h-4 w-4" />
+                                    ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                    )}
+                                </Button>
+                            </AlertDialogTrigger>
+                        </TooltipTrigger>
+                        <TooltipContent>Delete</TooltipContent>
+                        <AlertDialogContent size="sm">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete File</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to delete <strong>{file.fileName}</strong>? This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    variant="destructive"
+                                    className="cursor-pointer"
+                                    onClick={handleDelete}
+                                >
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                </Tooltip>
+                </TooltipProvider>
             </div>
         </div>
     );
