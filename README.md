@@ -8,7 +8,7 @@ AI-powered resume builder SaaS. Build, enhance, analyze, and export professional
 - **Language:** TypeScript
 - **Database:** Turso (libSQL) via Drizzle ORM
 - **Auth:** Better Auth (Google OAuth + Email/Password)
-- **AI:** Google AI Studio (Gemini) via Vercel AI SDK
+- **AI:** GROQ (GPT-OSS 120B) via Vercel AI SDK
 - **Payments:** Stripe (Pro/Lifetime tiers)
 - **Storage:** Vercel Blob (photos, PDFs)
 - **UI:** shadcn/ui + Tailwind CSS 4 + Framer Motion
@@ -56,7 +56,7 @@ AI-powered resume builder SaaS. Build, enhance, analyze, and export professional
 - Node.js 18+
 - A [Turso](https://turso.tech) account
 - A [Stripe](https://stripe.com) account (for billing)
-- A [Google AI Studio](https://aistudio.google.com) API key
+- A [GROQ](https://console.groq.com) API key
 - A [Google Cloud](https://console.cloud.google.com) project (for OAuth)
 
 ### Environment Variables
@@ -78,8 +78,8 @@ TURSO_AUTH_TOKEN=your_turso_auth_token
 # Vercel Blob Storage
 BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
 
-# Google AI Studio
-GOOGLE_AI_STUDIO_API_KEY=your_api_key
+# GROQ AI
+GROQ_API_KEY=your_groq_api_key
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
