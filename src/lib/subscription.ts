@@ -52,8 +52,9 @@ export async function getUserTier(userId: string): Promise<PlanTier> {
     return "lifetime";
   }
 
-  // Check if subscription was canceled or expired
-  if (subscription.stripeCancelAtPeriodEnd) return "free";
+  // Check if subscription has expired (period end passed)
+  // Note: stripeCancelAtPeriodEnd means the subscription won't renew,
+  // but access continues until stripeCurrentPeriodEnd
   if (subscription.stripeCurrentPeriodEnd <= new Date()) return "free";
 
   return getPlanFromPriceId(subscription.stripePriceId);

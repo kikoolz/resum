@@ -191,7 +191,6 @@ export async function POST(req: NextRequest) {
           .update(userSubscriptions)
           .set({
             stripeCancelAtPeriodEnd: true,
-            stripeCurrentPeriodEnd: new Date(),
           })
           .where(eq(userSubscriptions.userId, userId));
 
