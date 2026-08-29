@@ -3,7 +3,7 @@ import { coverLetters } from "@/db/schema";
 import { requireSession } from "@/lib/auth-server";
 import { canCreateCoverLetter } from "@/lib/subscription";
 import { eq, desc } from "drizzle-orm";
-import { Plus, FileText, Lock, Snowflake } from "lucide-react";
+import { Plus, Lock, Snowflake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createCoverLetter } from "../actions";
-import Link from "next/link";
+import { CoverLetterCard } from "./cover-letter-card";
 
 export default async function CoverLettersPage() {
   const session = await requireSession();
@@ -110,38 +110,7 @@ export default async function CoverLettersPage() {
           )}
 
           {userCoverLetters.map((cl) => (
-            <Link
-              key={cl.id}
-              href={`/dashboard/cover-letters/${cl.id}`}
-              className="group overflow-hidden rounded-lg border bg-card transition-all hover:shadow-md"
-            >
-              <div className="p-5">
-                <div className="mb-3 flex items-start justify-between">
-                  <div className="rounded-lg bg-primary/10 p-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
-                <h3 className="font-medium text-foreground line-clamp-1">
-                  {cl.title || "Untitled Cover Letter"}
-                </h3>
-                {cl.companyName && (
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
-                    {cl.companyName}
-                    {cl.jobTitle ? ` — ${cl.jobTitle}` : ""}
-                  </p>
-                )}
-                {!cl.companyName && cl.jobTitle && (
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-1">
-                    {cl.jobTitle}
-                  </p>
-                )}
-                <p className="mt-2 text-xs text-muted-foreground/70">
-                  {cl.updatedAt
-                    ? new Date(cl.updatedAt).toLocaleDateString()
-                    : "Recently created"}
-                </p>
-              </div>
-            </Link>
+            <CoverLetterCard key={cl.id} coverLetter={cl} />
           ))}
         </div>
       ) : (
